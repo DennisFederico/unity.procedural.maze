@@ -134,7 +134,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 390171310}
+  - component: {fileID: 390171314}
+  - component: {fileID: 390171313}
   - component: {fileID: 390171311}
+  - component: {fileID: 390171312}
+  - component: {fileID: 390171315}
+  - component: {fileID: 390171316}
+  - component: {fileID: 390171317}
   m_Layer: 0
   m_Name: MazeManager
   m_TagString: Untagged
@@ -164,12 +170,108 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 390171308}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 729d9b3aa1d6a47419bb65b41aff8612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cube: {fileID: 0}
+  mazeSize:
+    width: 40
+    height: 40
+  scale: 6
+--- !u!114 &390171312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390171308}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e56c450ab04646e2b68b9ad6a335ae0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mazeSize:
+    width: 50
+    height: 40
+  scale: 6
+--- !u!114 &390171313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390171308}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66cf297fd7b40438d94300e941e18020, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mazeSize:
+    width: 40
+    height: 40
+  scale: 6
+--- !u!114 &390171314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390171308}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b29213bc1633d4346b15fdd03ad7a72b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mazeSize:
+    width: 40
+    height: 40
+  scale: 6
+--- !u!114 &390171315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390171308}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46ad473684d8a4820962cc910285340c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mazeSize:
+    width: 40
+    height: 40
+  scale: 6
+--- !u!114 &390171316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390171308}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mazeSize:
+    width: 40
+    height: 40
+  scale: 6
+  directionRetries: 4
+--- !u!114 &390171317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390171308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c05cbd295340b4334a4fd906c39d7ca3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   mazeSize:
     width: 40
     height: 40
