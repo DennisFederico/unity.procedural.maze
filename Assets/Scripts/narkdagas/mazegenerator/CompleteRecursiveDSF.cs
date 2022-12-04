@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace narkdagas.mazegenerator {
     public class CompleteRecursiveDSF : MazeGenerator {
-        public override void GenerateMap() {
+        protected override void GenerateMap() {
             InnerGenerateMap(Random.Range(1, mazeSize.width - 1), Random.Range(1, mazeSize.height - 1));
         }
 

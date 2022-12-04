@@ -6,7 +6,7 @@ namespace narkdagas.mazegenerator {
 
         private List<MazeCellInfo> _availableStartCells = new();
 
-        public override void GenerateMap() {
+        protected override void GenerateMap() {
             // Starting Cell
             int x = Random.Range(1, mazeSize.width - 1);
             int z = Random.Range(1, mazeSize.height - 1);

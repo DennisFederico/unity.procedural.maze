@@ -4,7 +4,7 @@ namespace narkdagas.mazegenerator {
     public class RecursiveDSF : MazeGenerator {
         public int directionRetries = 3;
 
-        public override void GenerateMap() {
+        protected override void GenerateMap() {
             InnerGenerateMap(Random.Range(1, mazeSize.width - 1), Random.Range(1, mazeSize.height - 1));
         }
 

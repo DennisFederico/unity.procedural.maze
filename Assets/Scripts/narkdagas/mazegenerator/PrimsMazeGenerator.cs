@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace narkdagas.mazegenerator {
     public class PrimsMazeGenerator : MazeGenerator {
-        public override void GenerateMap() {
+        protected override void GenerateMap() {
             int x = Random.Range(1, mazeSize.width - 1);
             int z = Random.Range(1, mazeSize.height - 1);
             map[x, z] = 0;

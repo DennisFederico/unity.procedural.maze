@@ -8,6 +8,12 @@ namespace narkdagas.mazegenerator {
         [SerializeField] protected MazeDimension mazeSize;
         [SerializeField] protected int scale = 6;
         protected byte[,] map;
+        [SerializeField] protected GameObject playerPrefab;
+        [SerializeField] protected GameObject straightPiece;
+        [SerializeField] protected GameObject cornerPiece;
+        [SerializeField] protected GameObject deadEndPiece;
+        [SerializeField] protected GameObject junctionPiece;
+        [SerializeField] protected GameObject intersectionPiece;
 
         protected List<MazeCellInfo> directions = new() {
             new MazeCellInfo(1, 0),
@@ -41,10 +47,11 @@ namespace narkdagas.mazegenerator {
             InitializeMap();
             GenerateMap();
             DrawMap();
+            PlacePlayer();
         }
 
         private void InitializeMap() {
-            map = new byte[(int)mazeSize.width, (int)mazeSize.height];
+            map = new byte[mazeSize.width, mazeSize.height];
             for (int z = 0; z < mazeSize.height; z++) {
                 for (int x = 0; x < mazeSize.width; x++) {
                     map[x, z] = 1;
@@ -52,29 +59,84 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        public virtual void GenerateMap() {
-            map = new byte[(int)mazeSize.width, (int)mazeSize.height];
+        protected virtual void GenerateMap() {
+            map = new byte[mazeSize.width, mazeSize.height];
             for (int z = 0; z < mazeSize.height; z++) {
                 for (int x = 0; x < mazeSize.width; x++) {
-                    map[x, z] = (byte)(Random.Range(0, 100) < 50 ? 0 : 1); //1 = wall, 0 = corridor
+                    map[x, z] = (byte)(Random.Range(0, 100) < 50 ? MazeCellInfo.CORRIDOR : MazeCellInfo.WALL);
                 }
             }
         }
 
-        protected void DrawMap() {
+        private void DrawMap() {
             for (int z = 0; z < mazeSize.height; z++) {
                 for (int x = 0; x < mazeSize.width; x++) {
-                    if (map[x, z] == MazeCellInfo.WALL) {
-                        Vector3 pos = new Vector3(x * scale, 0, z * scale);
-                        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        wall.transform.localScale = new Vector3(scale, scale, scale);
-                        wall.transform.position = pos;
-                        //Instantiate(cube, pos, Quaternion.identity);
+                    Vector3 pos = new Vector3(x * scale, 0, z * scale);
+                    if (map[x, z] == MazeCellInfo.CORRIDOR) {
+                        var neighbours = map.GetCrossNeighboursForMazePiece(x, z);
+                        switch (neighbours.MatchMazePiece()) {
+                            case MazePiece.CorridorHorizontal:
+                                Instantiate(straightPiece, pos, Quaternion.Euler(0,90,0));
+                                continue;
+                            case MazePiece.CorridorVertical:
+                                Instantiate(straightPiece, pos, Quaternion.identity);
+                                continue;
+                            case MazePiece.CornerTopRight:
+                                Instantiate(cornerPiece, pos, Quaternion.identity);
+                                continue;
+                            case MazePiece.CornerTopLeft:
+                                Instantiate(cornerPiece, pos, Quaternion.Euler(0,270,0));
+                                continue;
+                            case MazePiece.CornerBottomRight:
+                                Instantiate(cornerPiece, pos, Quaternion.Euler(0,90,0));
+                                continue;
+                            case MazePiece.CornerBottomLeft:
+                                Instantiate(cornerPiece, pos, Quaternion.Euler(0,180,0));
+                                continue;
+                            case MazePiece.DeadEndTop:
+                                Instantiate(deadEndPiece, pos, Quaternion.Euler(0,180,0));
+                                continue;
+                            case MazePiece.DeadEndRight:
+                                Instantiate(deadEndPiece, pos, Quaternion.Euler(0,270,0));
+                                continue;
+                            case MazePiece.DeadEndLeft:
+                                Instantiate(deadEndPiece, pos, Quaternion.Euler(0,90,0));
+                                continue;
+                            case MazePiece.DeadEndBottom:
+                                Instantiate(deadEndPiece, pos, Quaternion.identity);
+                                continue;
+                            case MazePiece.JunctionTop:
+                                Instantiate(junctionPiece, pos, Quaternion.Euler(0,270,0));
+                                continue;
+                            case MazePiece.JunctionRight:
+                                Instantiate(junctionPiece, pos, Quaternion.identity);
+                                continue;
+                            case MazePiece.JunctionBottom:
+                                Instantiate(junctionPiece, pos, Quaternion.Euler(0,90,0));
+                                continue;
+                            case MazePiece.JunctionLeft:
+                                Instantiate(junctionPiece, pos, Quaternion.Euler(0,180,0));
+                                continue;
+                            case MazePiece.Intersection:
+                                Instantiate(intersectionPiece, pos, Quaternion.identity);
+                                continue;
+                        }
                     }
                 }
             }
         }
 
+        private void PlacePlayer() {
+            for (int x = 1; x < mazeSize.width - 1; x++) {
+                for (int z = 1; z < mazeSize.height - 1; z++) {
+                    if (map[x, z] == MazeCellInfo.CORRIDOR) {
+                        Instantiate(playerPrefab, new Vector3(x * 6, 0, z * 6), Quaternion.identity);
+                        return;
+                    }
+                }
+            }
+        }
+        
         protected int CountCrossNeighboursOfType(int x, int z, byte type = MazeCellInfo.CORRIDOR) {
             if (IsOutsideMaze(x, z)) return 5;
 
