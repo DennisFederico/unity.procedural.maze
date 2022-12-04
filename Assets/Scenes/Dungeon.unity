@@ -273,6 +273,13 @@ MonoBehaviour:
   scale: 6
   playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
     type: 3}
+  flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
+    type: 3}
+  wallPieces:
+  - {fileID: 7532689207284695087, guid: 2afe1a511a7d44dfe99555200cbcaace, type: 3}
+  - {fileID: 4283963434716383813, guid: a25093bfd40cd4f8a8390f2ff6475d88, type: 3}
+  doorwayPieces:
+  - {fileID: 2497754941858362064, guid: fe4d361ad9b8a4cc6bf412c837b1be95, type: 3}
   straightPieces:
   - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
   cornerPieces:

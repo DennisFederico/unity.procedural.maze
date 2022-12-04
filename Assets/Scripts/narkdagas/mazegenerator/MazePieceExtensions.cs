@@ -18,104 +18,204 @@ namespace narkdagas.mazegenerator {
         JunctionBottom,
         JunctionLeft,
         Intersection,
-        UnknownPiece
+        OpenRoom,
+        Custom
     }
         
     static class MazePieceExtensions {
-        public static MazePiece MatchMazePiece(this byte[] pattern) {
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR
-                })) return MazePiece.CorridorHorizontal;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL
-                })) return MazePiece.CorridorVertical;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL
-                })) return MazePiece.CornerTopRight;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR
-                })) return MazePiece.CornerTopLeft;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL
-                })) return MazePiece.CornerBottomRight;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR
-                })) return MazePiece.CornerBottomLeft;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL
-                })) return MazePiece.DeadEndTop;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL
-                })) return MazePiece.DeadEndRight;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL
-                })) return MazePiece.DeadEndBottom;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR
-                })) return MazePiece.DeadEndLeft;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR
-                })) return MazePiece.JunctionTop;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL
-                })) return MazePiece.JunctionRight;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR
-                })) return MazePiece.JunctionBottom;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.WALL, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR
-                })) return MazePiece.JunctionLeft;
-            if (Enumerable.SequenceEqual(pattern, new [] {
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR, 
-                    MazeGenerator.MazeCellInfo.CORRIDOR
+        
+        // MATCHING CLOCKWISE FROM TOP-LEFT
+        //          |---|---|---|
+        //          | 0 | 1 | 2 |
+        //          |---|---|---|
+        //          | 7 | X | 3 |
+        //          |---|---|---|
+        //          | 6 | 5 | 4 |
+        //          |---|---|---|
+        public static MazePiece MatchMazePiece(this byte[] neighbours) {
+
+            if (Enumerable.SequenceEqual(neighbours, new [] {
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Corridor
+                })) return MazePiece.OpenRoom;
+            
+            if (Enumerable.SequenceEqual(neighbours, new [] {
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Corridor
                 })) return MazePiece.Intersection;
-            return MazePiece.UnknownPiece;
+            
+            // T-Junctions
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor
+                })) return MazePiece.JunctionTop;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Wall
+                })) return MazePiece.JunctionRight;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Corridor
+                })) return MazePiece.JunctionBottom;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Corridor
+                })) return MazePiece.JunctionLeft;
+            
+            //CORNERS
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Wall
+                })) return MazePiece.CornerTopRight;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Corridor
+                })) return MazePiece.CornerTopLeft;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor, 
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Wall
+                })) return MazePiece.CornerBottomRight;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Any, 
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Wall, 
+                    MazeGenerator.MazeCellInfo.Corridor
+                })) return MazePiece.CornerBottomLeft;
+
+            //Corridors
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor
+                })) return MazePiece.CorridorHorizontal;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall
+                })) return MazePiece.CorridorVertical;
+            
+            //Dead Ends
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall
+                })) return MazePiece.DeadEndTop;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall
+                })) return MazePiece.DeadEndRight;
+            if (neighbours.MatchPattern(new [] {
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall
+                })) return MazePiece.DeadEndBottom;
+            if (neighbours.MatchPattern( new [] {
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Wall,
+                    MazeGenerator.MazeCellInfo.Any,
+                    MazeGenerator.MazeCellInfo.Corridor
+                })) return MazePiece.DeadEndLeft;
+            
+            
+            return MazePiece.Custom;
         }
 
+        // CROSS NEIGHBOURS FROM TOP
+        //              |---|
+        //              | 0 |
+        //          |---|---|---|
+        //          | 3 | X | 1 |
+        //          |---|---|---|
+        //              | 2 | 
+        //              |---|
         public static byte[] GetCrossNeighboursForMazePiece(this byte[,] map, int x, int z) {
             return new[] {
                 map[x, z + 1], //UP
@@ -124,17 +224,37 @@ namespace narkdagas.mazegenerator {
                 map[x - 1, z]  //LEFT
             };
         }
-        // public static byte[] GetAllNeighboursForMazePiece(this byte[,] map, int x, int z) {
-        //     return new[] {
-        //         map[x - 1, z + 1], //UP/LEFT
-        //         map[x, z + 1], //UP
-        //         map[x + 1, z + 1], //UP/RIGHT
-        //         map[x + 1, z],  //RIGHT
-        //         map[x + 1, z - 1], //DOWN/RIGHT
-        //         map[x, z - 1], //DOWN
-        //         map[x - 1, z - 1] //DOWN/LEFT
-        //     };
-        // }
+
+        // NEIGHBOURS CLOCKWISE FROM TOP-LEFT
+        //          |---|---|---|
+        //          | 0 | 1 | 2 |
+        //          |---|---|---|
+        //          | 7 | X | 3 |
+        //          |---|---|---|
+        //          | 6 | 5 | 4 |
+        //          |---|---|---|
+        public static byte[] GetAllNeighboursForMazePiece(this byte[,] map, int x, int z) {
+            return new[] {
+                map[x - 1, z + 1], //UP/LEFT
+                map[x, z + 1], //UP
+                map[x + 1, z + 1], //UP/RIGHT
+                map[x + 1, z],  //RIGHT
+                map[x + 1, z - 1], //DOWN/RIGHT
+                map[x, z - 1], //DOWN
+                map[x - 1, z - 1], //DOWN/LEFT
+                map[x - 1, z] //LEFT
+            };
+        }
+
+        private static bool MatchPattern(this byte[] compare, byte[] pattern) {
+            if (compare.Length != pattern.Length) return false;
+            for (int i = 0; i < compare.Length; i++) {
+                if (pattern[i] != MazeGenerator.MazeCellInfo.Any && compare[i] != pattern[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
 }

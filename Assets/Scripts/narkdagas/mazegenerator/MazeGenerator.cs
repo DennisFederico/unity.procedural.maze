@@ -9,13 +9,16 @@ namespace narkdagas.mazegenerator {
         [SerializeField] protected int scale = 6;
         protected byte[,] map;
         [SerializeField] protected GameObject playerPrefab;
+        [SerializeField] protected GameObject flooredCeiling;
+        [SerializeField] protected GameObject[] wallPieces;
+        [SerializeField] protected GameObject[] doorwayPieces;
         [SerializeField] protected GameObject[] straightPieces;
         [SerializeField] protected GameObject[] cornerPieces;
         [SerializeField] protected GameObject[] deadEndPieces;
         [SerializeField] protected GameObject[] junctionPieces;
         [SerializeField] protected GameObject[] intersectionPieces;
 
-        protected List<MazeCellInfo> directions = new() {
+        protected readonly List<MazeCellInfo> directions = new() {
             new MazeCellInfo(1, 0),
             new MazeCellInfo(0, 1),
             new MazeCellInfo(-1, 0),
@@ -31,11 +34,12 @@ namespace narkdagas.mazegenerator {
         public struct MazeCellInfo {
             public int x, z;
             public byte wallType;
-            public const byte WALL = 1;
-            public const byte CORRIDOR = 0;
-            public const byte MAZE = 2;
+            public const byte Wall = 1;
+            public const byte Corridor = 0;
+            public const byte Maze = 2;
+            public const byte Any = 9;
 
-            public MazeCellInfo(int x, int z, byte wallType = WALL) {
+            public MazeCellInfo(int x, int z, byte wallType = Wall) {
                 this.x = x;
                 this.z = z;
                 this.wallType = wallType;
@@ -64,7 +68,7 @@ namespace narkdagas.mazegenerator {
             map = new byte[mazeSize.width, mazeSize.height];
             for (int z = 0; z < mazeSize.height; z++) {
                 for (int x = 0; x < mazeSize.width; x++) {
-                    map[x, z] = (byte)(Random.Range(0, 100) < 50 ? MazeCellInfo.CORRIDOR : MazeCellInfo.WALL);
+                    map[x, z] = (Random.Range(0, 100) < 50 ? MazeCellInfo.Corridor : MazeCellInfo.Wall);
                 }
             }
         }
@@ -78,21 +82,21 @@ namespace narkdagas.mazegenerator {
 
                 for (var x = startX; x <= startX + width; x++) {
                     for (var z = startZ; z <= startZ + height; z++) {
-                        map[x, z] = MazeCellInfo.CORRIDOR;
+                        map[x, z] = MazeCellInfo.Corridor;
                     }
                 }
             }
         }
-        
+
         private void DrawMap() {
             for (int z = 0; z < mazeSize.height; z++) {
                 for (int x = 0; x < mazeSize.width; x++) {
                     Vector3 pos = new Vector3(x * scale, 0, z * scale);
-                    if (map[x, z] == MazeCellInfo.CORRIDOR) {
-                        var neighbours = map.GetCrossNeighboursForMazePiece(x, z);
+                    if (map[x, z] == MazeCellInfo.Corridor) {
+                        var neighbours = map.GetAllNeighboursForMazePiece(x, z);
                         switch (neighbours.MatchMazePiece()) {
                             case MazePiece.CorridorHorizontal:
-                                Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0,90,0));
+                                Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
                             case MazePiece.CorridorVertical:
                                 Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.identity);
@@ -101,45 +105,46 @@ namespace narkdagas.mazegenerator {
                                 Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
                             case MazePiece.CornerTopLeft:
-                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0,270,0));
+                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
                                 break;
                             case MazePiece.CornerBottomRight:
-                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0,90,0));
+                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
                             case MazePiece.CornerBottomLeft:
-                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0,180,0));
+                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
                                 break;
                             case MazePiece.DeadEndTop:
-                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0,180,0));
+                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
                                 break;
                             case MazePiece.DeadEndRight:
-                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0,270,0));
+                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
                                 break;
                             case MazePiece.DeadEndLeft:
-                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0,90,0));
+                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
                             case MazePiece.DeadEndBottom:
                                 Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
                             case MazePiece.JunctionTop:
-                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0,270,0));
+                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
                                 break;
                             case MazePiece.JunctionRight:
                                 Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
                             case MazePiece.JunctionBottom:
-                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0,90,0));
+                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
                             case MazePiece.JunctionLeft:
-                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0,180,0));
+                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
                                 break;
                             case MazePiece.Intersection:
                                 Instantiate(intersectionPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
-                            case MazePiece.UnknownPiece:
-                                var primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                                primitive.transform.localScale = Vector3.one * 6;
-                                primitive.transform.position = pos;
+                            case MazePiece.OpenRoom:
+                                Instantiate(flooredCeiling, pos, Quaternion.identity);
+                                break;
+                            case MazePiece.Custom:
+                                DrawCustomPiece(pos, map.GetCrossNeighboursForMazePiece(x, z));
                                 break;
                         }
                     }
@@ -147,18 +152,27 @@ namespace narkdagas.mazegenerator {
             }
         }
 
+        private void DrawCustomPiece(Vector3 pos, byte[] neighbours) {
+            Instantiate(flooredCeiling, pos, Quaternion.identity);
+            for (int i = 0; i < neighbours.Length; i++) {
+                if (neighbours[i] == MazeCellInfo.Wall) {
+                    Instantiate(wallPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90 * i, 0));
+                }
+            }
+        }
+
         private void PlacePlayer() {
             for (int x = 1; x < mazeSize.width - 1; x++) {
                 for (int z = 1; z < mazeSize.height - 1; z++) {
-                    if (map[x, z] == MazeCellInfo.CORRIDOR) {
+                    if (map[x, z] == MazeCellInfo.Corridor) {
                         Instantiate(playerPrefab, new Vector3(x * 6, 0, z * 6), Quaternion.identity);
                         return;
                     }
                 }
             }
         }
-        
-        protected int CountCrossNeighboursOfType(int x, int z, byte type = MazeCellInfo.CORRIDOR) {
+
+        protected int CountCrossNeighboursOfType(int x, int z, byte type = MazeCellInfo.Corridor) {
             if (IsOutsideMaze(x, z)) return 5;
 
             int count = 0;
@@ -169,7 +183,7 @@ namespace narkdagas.mazegenerator {
             return count;
         }
 
-        protected int CountDiagonalNeighboursOfType(int x, int z, byte type = MazeCellInfo.CORRIDOR) {
+        protected int CountDiagonalNeighboursOfType(int x, int z, byte type = MazeCellInfo.Corridor) {
             if (IsOutsideMaze(x, z)) return 5;
 
             int count = 0;

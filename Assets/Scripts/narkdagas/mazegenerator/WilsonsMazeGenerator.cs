@@ -10,7 +10,7 @@ namespace narkdagas.mazegenerator {
             // Starting Cell
             int x = Random.Range(1, mazeSize.width - 1);
             int z = Random.Range(1, mazeSize.height - 1);
-            map[x, z] = MazeCellInfo.MAZE;
+            map[x, z] = MazeCellInfo.Maze;
 
             int tries = 0;
             while (GetAvailableCells() > 1 && tries < 5000) {
@@ -25,9 +25,9 @@ namespace narkdagas.mazegenerator {
             _availableStartCells.Clear();
             for (int z = 1; z < mazeSize.height - 1; z++) {
                 for (int x = 1; x < mazeSize.width - 1; x++) {
-                    if (map[x, z] == MazeCellInfo.WALL &&
+                    if (map[x, z] == MazeCellInfo.Wall &&
                         CountCrossNeighboursOfType(x, z) == 0 &&
-                        CountCrossNeighboursOfType(x, z, MazeCellInfo.MAZE) == 0) {
+                        CountCrossNeighboursOfType(x, z, MazeCellInfo.Maze) == 0) {
                         _availableStartCells.Add(new MazeCellInfo(x, z));
                     }
                 }
@@ -49,7 +49,7 @@ namespace narkdagas.mazegenerator {
             while (IsInsideMaze(x, z) && retry < 10) {
 
                 if (retry == 0) {
-                    map[x, z] = MazeCellInfo.CORRIDOR;
+                    map[x, z] = MazeCellInfo.Corridor;
                     inWalk.Add(new MazeCellInfo(x, z));
                 }
 
@@ -75,14 +75,14 @@ namespace narkdagas.mazegenerator {
             }
 
             if (isValidPath) {
-                inWalk.Add(new MazeCellInfo(x, z, MazeCellInfo.CORRIDOR));
+                inWalk.Add(new MazeCellInfo(x, z, MazeCellInfo.Corridor));
                 Debug.Log("Found Path");
                 foreach (MazeCellInfo cellInfo in inWalk) {
                     map[cellInfo.x, cellInfo.z] = 2;
                 }
             } else {
                 foreach (MazeCellInfo cellInfo in inWalk) {
-                    map[cellInfo.x, cellInfo.z] = MazeCellInfo.WALL;
+                    map[cellInfo.x, cellInfo.z] = MazeCellInfo.Wall;
                 }
             }
 
