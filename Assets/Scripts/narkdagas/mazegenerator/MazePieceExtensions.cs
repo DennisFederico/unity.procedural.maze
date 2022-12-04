@@ -18,7 +18,7 @@ namespace narkdagas.mazegenerator {
         JunctionBottom,
         JunctionLeft,
         Intersection,
-        Wall
+        UnknownPiece
     }
         
     static class MazePieceExtensions {
@@ -113,7 +113,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.CORRIDOR, 
                     MazeGenerator.MazeCellInfo.CORRIDOR
                 })) return MazePiece.Intersection;
-            return MazePiece.Wall;
+            return MazePiece.UnknownPiece;
         }
 
         public static byte[] GetCrossNeighboursForMazePiece(this byte[,] map, int x, int z) {

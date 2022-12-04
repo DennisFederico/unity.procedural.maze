@@ -9,11 +9,11 @@ namespace narkdagas.mazegenerator {
         [SerializeField] protected int scale = 6;
         protected byte[,] map;
         [SerializeField] protected GameObject playerPrefab;
-        [SerializeField] protected GameObject straightPiece;
-        [SerializeField] protected GameObject cornerPiece;
-        [SerializeField] protected GameObject deadEndPiece;
-        [SerializeField] protected GameObject junctionPiece;
-        [SerializeField] protected GameObject intersectionPiece;
+        [SerializeField] protected GameObject[] straightPieces;
+        [SerializeField] protected GameObject[] cornerPieces;
+        [SerializeField] protected GameObject[] deadEndPieces;
+        [SerializeField] protected GameObject[] junctionPieces;
+        [SerializeField] protected GameObject[] intersectionPieces;
 
         protected List<MazeCellInfo> directions = new() {
             new MazeCellInfo(1, 0),
@@ -46,6 +46,7 @@ namespace narkdagas.mazegenerator {
         private void Start() {
             InitializeMap();
             GenerateMap();
+            AddRooms(3, 4, 6);
             DrawMap();
             PlacePlayer();
         }
@@ -68,6 +69,21 @@ namespace narkdagas.mazegenerator {
             }
         }
 
+        protected virtual void AddRooms(int numRooms, int minSize, int maxSize) {
+            for (int room = 1; room <= numRooms; room++) {
+                var width = Random.Range(minSize, maxSize + 1);
+                var height = Random.Range(minSize, maxSize + 1);
+                var startX = Random.Range(3, mazeSize.width - width - 3);
+                var startZ = Random.Range(3, mazeSize.height - height - 3);
+
+                for (var x = startX; x <= startX + width; x++) {
+                    for (var z = startZ; z <= startZ + height; z++) {
+                        map[x, z] = MazeCellInfo.CORRIDOR;
+                    }
+                }
+            }
+        }
+        
         private void DrawMap() {
             for (int z = 0; z < mazeSize.height; z++) {
                 for (int x = 0; x < mazeSize.width; x++) {
@@ -76,50 +92,55 @@ namespace narkdagas.mazegenerator {
                         var neighbours = map.GetCrossNeighboursForMazePiece(x, z);
                         switch (neighbours.MatchMazePiece()) {
                             case MazePiece.CorridorHorizontal:
-                                Instantiate(straightPiece, pos, Quaternion.Euler(0,90,0));
-                                continue;
+                                Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0,90,0));
+                                break;
                             case MazePiece.CorridorVertical:
-                                Instantiate(straightPiece, pos, Quaternion.identity);
-                                continue;
+                                Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.identity);
+                                break;
                             case MazePiece.CornerTopRight:
-                                Instantiate(cornerPiece, pos, Quaternion.identity);
-                                continue;
+                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.identity);
+                                break;
                             case MazePiece.CornerTopLeft:
-                                Instantiate(cornerPiece, pos, Quaternion.Euler(0,270,0));
-                                continue;
+                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0,270,0));
+                                break;
                             case MazePiece.CornerBottomRight:
-                                Instantiate(cornerPiece, pos, Quaternion.Euler(0,90,0));
-                                continue;
+                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0,90,0));
+                                break;
                             case MazePiece.CornerBottomLeft:
-                                Instantiate(cornerPiece, pos, Quaternion.Euler(0,180,0));
-                                continue;
+                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0,180,0));
+                                break;
                             case MazePiece.DeadEndTop:
-                                Instantiate(deadEndPiece, pos, Quaternion.Euler(0,180,0));
-                                continue;
+                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0,180,0));
+                                break;
                             case MazePiece.DeadEndRight:
-                                Instantiate(deadEndPiece, pos, Quaternion.Euler(0,270,0));
-                                continue;
+                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0,270,0));
+                                break;
                             case MazePiece.DeadEndLeft:
-                                Instantiate(deadEndPiece, pos, Quaternion.Euler(0,90,0));
-                                continue;
+                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0,90,0));
+                                break;
                             case MazePiece.DeadEndBottom:
-                                Instantiate(deadEndPiece, pos, Quaternion.identity);
-                                continue;
+                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.identity);
+                                break;
                             case MazePiece.JunctionTop:
-                                Instantiate(junctionPiece, pos, Quaternion.Euler(0,270,0));
-                                continue;
+                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0,270,0));
+                                break;
                             case MazePiece.JunctionRight:
-                                Instantiate(junctionPiece, pos, Quaternion.identity);
-                                continue;
+                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.identity);
+                                break;
                             case MazePiece.JunctionBottom:
-                                Instantiate(junctionPiece, pos, Quaternion.Euler(0,90,0));
-                                continue;
+                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0,90,0));
+                                break;
                             case MazePiece.JunctionLeft:
-                                Instantiate(junctionPiece, pos, Quaternion.Euler(0,180,0));
-                                continue;
+                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0,180,0));
+                                break;
                             case MazePiece.Intersection:
-                                Instantiate(intersectionPiece, pos, Quaternion.identity);
-                                continue;
+                                Instantiate(intersectionPieces.GetRandomPiece(), pos, Quaternion.identity);
+                                break;
+                            case MazePiece.UnknownPiece:
+                                var primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                                primitive.transform.localScale = Vector3.one * 6;
+                                primitive.transform.position = pos;
+                                break;
                         }
                     }
                 }
