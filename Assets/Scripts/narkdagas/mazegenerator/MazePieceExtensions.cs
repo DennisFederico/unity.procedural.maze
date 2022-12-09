@@ -225,6 +225,17 @@ namespace narkdagas.mazegenerator {
             };
         }
 
+        public static byte CircularIndexValue(this byte[] array, int index) {
+            //Using modulo we can index past the array length
+            //For negative indexes we "inverse" the indexing subtracting from length of the array the modulo of the abs index 
+            // Assume and array of Length = 4
+            // Requested Index  |-9|-8|-7|-6|-5|-4|-3|-2|-1|(0)|+1|+2|+3|+4|+5|+6|+7|+8|+9|
+            //      Real Index  | 3| 0| 1| 2| 3| 0| 1| 2| 3| 0 | 1| 2| 3| 0| 1| 2| 3| 0| 1|
+            // 4-(abs(-9)%4)=3 | 4-(abs(-7)%4)=1 | 4-(abs(-3)%4)=1 | 4-(abs(-1)%4)=3 ...
+            var circularIndex = index < 0 ? array.Length-((index * -1) % array.Length) : index % array.Length;
+            return array[circularIndex];
+        }
+        
         // NEIGHBOURS CLOCKWISE FROM TOP-LEFT
         //          |---|---|---|
         //          | 0 | 1 | 2 |

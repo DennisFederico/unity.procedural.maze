@@ -12,11 +12,16 @@ namespace narkdagas.mazegenerator {
         [SerializeField] protected GameObject flooredCeiling;
         [SerializeField] protected GameObject[] wallPieces;
         [SerializeField] protected GameObject[] doorwayPieces;
+        [SerializeField] protected GameObject[] pillarPieces;
         [SerializeField] protected GameObject[] straightPieces;
         [SerializeField] protected GameObject[] cornerPieces;
         [SerializeField] protected GameObject[] deadEndPieces;
         [SerializeField] protected GameObject[] junctionPieces;
         [SerializeField] protected GameObject[] intersectionPieces;
+        [SerializeField] protected int numRooms = 3;
+        [SerializeField] protected int roomMinSize = 3;
+        [SerializeField] protected int roomMaxSize = 6;
+
 
         protected readonly List<MazeCellInfo> directions = new() {
             new MazeCellInfo(1, 0),
@@ -50,7 +55,7 @@ namespace narkdagas.mazegenerator {
         private void Start() {
             InitializeMap();
             GenerateMap();
-            AddRooms(3, 4, 6);
+            AddRooms(numRooms, roomMinSize, roomMaxSize);
             DrawMap();
             PlacePlayer();
         }
@@ -144,7 +149,8 @@ namespace narkdagas.mazegenerator {
                                 Instantiate(flooredCeiling, pos, Quaternion.identity);
                                 break;
                             case MazePiece.Custom:
-                                DrawCustomPiece(pos, map.GetCrossNeighboursForMazePiece(x, z));
+                                //DrawCustomPieceOrig(pos, map.GetCrossNeighboursForMazePiece(x, z));
+                                DrawWallsAndPillars(pos, neighbours);
                                 break;
                         }
                     }
@@ -152,12 +158,39 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        private void DrawCustomPiece(Vector3 pos, byte[] neighbours) {
+        private void DrawCustomPieceOrig(Vector3 pos, byte[] neighbours) {
             Instantiate(flooredCeiling, pos, Quaternion.identity);
             for (int i = 0; i < neighbours.Length; i++) {
                 if (neighbours[i] == MazeCellInfo.Wall) {
                     Instantiate(wallPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90 * i, 0));
                 }
+            }
+        }
+
+        private void DrawWallsAndPillars(Vector3 pos, byte[] neighbours) {
+            Instantiate(flooredCeiling, pos, Quaternion.identity);
+            //TOP = 1 / RIGHT = 3 / DOWN = 5 / LEFT = 7
+            //The left pillar is y-rotated -90, and each pillar should have the same rotation of its wall
+            //Using circular Index
+            //TODO Not keeping track of columns mean that for another (x,y) there could be other columns in the same place
+            int rotation = 0;
+            foreach (int side in new int[] { 1, 3, 5, 7 }) {
+                if (neighbours[side] == MazeCellInfo.Wall) {
+                    var wallRotation = Quaternion.Euler(0, rotation * 90, 0);
+                    GameObject wall = Instantiate(wallPieces.GetRandomPiece(), pos, wallRotation);
+                    wall.name = "Wall";
+                    if (neighbours.CircularIndexValue(side + 1) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side + 2) == MazeCellInfo.Corridor) {
+                        GameObject pilar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles));
+                        pilar.name = wall.name + "_RightPilar";
+                    }
+
+                    if (neighbours.CircularIndexValue(side - 2) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side - 1) == MazeCellInfo.Corridor) {
+                        GameObject pilar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles + new Vector3(0, -90, 0)));
+                        pilar.name = wall.name + "_LeftPilar";
+                    }
+                }
+
+                rotation++;
             }
         }
 
