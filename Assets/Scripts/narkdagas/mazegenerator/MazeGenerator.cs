@@ -5,6 +5,7 @@ using Random = UnityEngine.Random;
 
 namespace narkdagas.mazegenerator {
     public class MazeGenerator : MonoBehaviour {
+        [SerializeField] protected int genSeed = 432912345;
         [SerializeField] protected MazeDimension mazeSize;
         [SerializeField] protected int scale = 6;
         protected byte[,] map;
@@ -51,6 +52,30 @@ namespace narkdagas.mazegenerator {
             }
         }
 
+        //The relative position of neighbours
+        // MATCHING CLOCKWISE FROM TOP-LEFT
+        //          |---|---|---|
+        //          | 0 | 1 | 2 |
+        //          |---|---|---|
+        //          | 7 | X | 3 |
+        //          |---|---|---|
+        //          | 6 | 5 | 4 |
+        //          |---|---|---|
+        protected readonly Vector3[] neighbourRelativeCoords = {
+            new(-1, 0, 1),
+            new(0, 0, 1),
+            new(1, 0, 1),
+            new(1, 0, 0),
+            new(1, 0, -1),
+            new(0, 0, -1),
+            new(-1, 0, -1),
+            new(-1, 0, 0)
+        };
+
+        private void Awake() {
+            Random.InitState(genSeed);
+        }
+
         // Start is called before the first frame update
         private void Start() {
             InitializeMap();
@@ -78,8 +103,8 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        protected virtual void AddRooms(int numRooms, int minSize, int maxSize) {
-            for (int room = 1; room <= numRooms; room++) {
+        protected virtual void AddRooms(int numberOfRooms, int minSize, int maxSize) {
+            for (int room = 1; room <= numberOfRooms; room++) {
                 var width = Random.Range(minSize, maxSize + 1);
                 var height = Random.Range(minSize, maxSize + 1);
                 var startX = Random.Range(3, mazeSize.width - width - 3);
@@ -94,6 +119,7 @@ namespace narkdagas.mazegenerator {
         }
 
         private void DrawMap() {
+            Dictionary<Vector3, bool> pillarsLocations = new Dictionary<Vector3, bool>();
             for (int z = 0; z < mazeSize.height; z++) {
                 for (int x = 0; x < mazeSize.width; x++) {
                     Vector3 pos = new Vector3(x * scale, 0, z * scale);
@@ -150,7 +176,7 @@ namespace narkdagas.mazegenerator {
                                 break;
                             case MazePiece.Custom:
                                 //DrawCustomPieceOrig(pos, map.GetCrossNeighboursForMazePiece(x, z));
-                                DrawWallsAndPillars(pos, neighbours);
+                                DrawWallsAndPillars(pos, neighbours, pillarsLocations);
                                 break;
                         }
                     }
@@ -167,26 +193,33 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        private void DrawWallsAndPillars(Vector3 pos, byte[] neighbours) {
+        private void DrawWallsAndPillars(Vector3 pos, byte[] neighbours, IDictionary<Vector3, bool> pillars) {
             Instantiate(flooredCeiling, pos, Quaternion.identity);
             //TOP = 1 / RIGHT = 3 / DOWN = 5 / LEFT = 7
             //The left pillar is y-rotated -90, and each pillar should have the same rotation of its wall
-            //Using circular Index
-            //TODO Not keeping track of columns mean that for another (x,y) there could be other columns in the same place
+            //Using circular Index to reference neighbours
+            //To keep track of the pillars we assume they will be added in the respective "diagonal" coordinate of the cell
+            //TODO DEBUG PILLAR AT COORDINATE 102.72
+            Vector3 posInt = new Vector3((int)pos.x, 0, (int)pos.z);
             int rotation = 0;
-            foreach (int side in new int[] { 1, 3, 5, 7 }) {
+            foreach (int side in new[] { 1, 3, 5, 7 }) {
                 if (neighbours[side] == MazeCellInfo.Wall) {
                     var wallRotation = Quaternion.Euler(0, rotation * 90, 0);
                     GameObject wall = Instantiate(wallPieces.GetRandomPiece(), pos, wallRotation);
                     wall.name = "Wall";
-                    if (neighbours.CircularIndexValue(side + 1) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side + 2) == MazeCellInfo.Corridor) {
+
+                    Vector3 rightPillarPos = (neighbourRelativeCoords.CircularIndexValue(side + 1) * scale / 2) + posInt;
+                    if (neighbours.CircularIndexValue(side + 1) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side + 2) == MazeCellInfo.Corridor && !pillars.ContainsKey(rightPillarPos)) {
                         GameObject pilar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles));
-                        pilar.name = wall.name + "_RightPilar";
+                        pilar.name = wall.name + $"_RightPilar({rightPillarPos.x},{rightPillarPos.y})";
+                        pillars.Add(rightPillarPos, true);
                     }
 
-                    if (neighbours.CircularIndexValue(side - 2) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side - 1) == MazeCellInfo.Corridor) {
+                    Vector3 leftPillarPos = (neighbourRelativeCoords.CircularIndexValue(side - 1) * scale / 2) + posInt;
+                    if (neighbours.CircularIndexValue(side - 2) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side - 1) == MazeCellInfo.Corridor && !pillars.ContainsKey(leftPillarPos)) {
                         GameObject pilar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles + new Vector3(0, -90, 0)));
-                        pilar.name = wall.name + "_LeftPilar";
+                        pilar.name = wall.name + $"_LeftPilar({leftPillarPos.x},{leftPillarPos.y})";
+                        pillars.Add(leftPillarPos, true);
                     }
                 }
 

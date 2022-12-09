@@ -225,7 +225,7 @@ namespace narkdagas.mazegenerator {
             };
         }
 
-        public static byte CircularIndexValue(this byte[] array, int index) {
+        public static T CircularIndexValue<T>(this T[] array, int index) {
             //Using modulo we can index past the array length
             //For negative indexes we "inverse" the indexing subtracting from length of the array the modulo of the abs index 
             // Assume and array of Length = 4
