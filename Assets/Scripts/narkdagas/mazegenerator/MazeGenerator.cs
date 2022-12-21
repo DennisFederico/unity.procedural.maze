@@ -6,9 +6,7 @@ using Random = UnityEngine.Random;
 namespace narkdagas.mazegenerator {
     public class MazeGenerator : MonoBehaviour {
         [SerializeField] protected int genSeed = 432912345;
-        [SerializeField] protected MazeDimension mazeSize;
-        [SerializeField] protected int scale = 6;
-        protected byte[,] map;
+        [SerializeField] public int scale = 6;
         [SerializeField] protected GameObject playerPrefab;
         [SerializeField] protected GameObject flooredCeiling;
         [SerializeField] protected GameObject[] wallPieces;
@@ -19,10 +17,13 @@ namespace narkdagas.mazegenerator {
         [SerializeField] protected GameObject[] deadEndPieces;
         [SerializeField] protected GameObject[] junctionPieces;
         [SerializeField] protected GameObject[] intersectionPieces;
-        [SerializeField] protected int numRooms = 3;
-        [SerializeField] protected int roomMinSize = 3;
-        [SerializeField] protected int roomMaxSize = 6;
-
+        [SerializeField] protected byte numRooms = 3;
+        [SerializeField] protected byte roomMinSize = 3;
+        [SerializeField] protected byte roomMaxSize = 6;
+        [SerializeField] protected bool placePlayer = false;
+        public MazeConfig mazeConfig;
+        protected byte[,] map;
+        public PieceData[,] pieces;
 
         protected readonly List<MazeCellInfo> directions = new() {
             new MazeCellInfo(1, 0),
@@ -32,9 +33,20 @@ namespace narkdagas.mazegenerator {
         };
 
         [Serializable]
-        protected struct MazeDimension {
-            public int width;
-            public int height;
+        public struct MazeConfig {
+            public byte width;
+            public byte height;
+            public byte level;
+            public byte numRooms;
+            public bool placePlayer;
+
+            public MazeConfig(byte width, byte height, byte level = 0, byte numRooms = 0, bool placePlayer = false) {
+                this.width = width;
+                this.height = height;
+                this.level = level;
+                this.numRooms = numRooms;
+                this.placePlayer = placePlayer;
+            }
         }
 
         public struct MazeCellInfo {
@@ -73,43 +85,49 @@ namespace narkdagas.mazegenerator {
         };
 
         private void Awake() {
-            Random.InitState(genSeed);
+            //Random.InitState(genSeed);
         }
 
         // Start is called before the first frame update
-        private void Start() {
+        public void Build(byte width, byte height, byte level) {
+            mazeConfig = new MazeConfig(width, height, level, numRooms, placePlayer);
             InitializeMap();
             GenerateMap();
             AddRooms(numRooms, roomMinSize, roomMaxSize);
             DrawMap();
-            PlacePlayer();
+            if (placePlayer) PlacePlayer();
         }
 
         private void InitializeMap() {
-            map = new byte[mazeSize.width, mazeSize.height];
-            for (int z = 0; z < mazeSize.height; z++) {
-                for (int x = 0; x < mazeSize.width; x++) {
+            Debug.Log($"Initializing map level {mazeConfig.level} - [{mazeConfig.width}][{mazeConfig.height}]");
+            map = new byte[mazeConfig.width, mazeConfig.height];
+            pieces = new PieceData[mazeConfig.width, mazeConfig.height];
+            for (int z = 0; z < mazeConfig.height; z++) {
+                for (int x = 0; x < mazeConfig.width; x++) {
                     map[x, z] = 1;
                 }
             }
         }
 
         protected virtual void GenerateMap() {
-            map = new byte[mazeSize.width, mazeSize.height];
-            for (int z = 0; z < mazeSize.height; z++) {
-                for (int x = 0; x < mazeSize.width; x++) {
+            Debug.Log($"Generate map level {mazeConfig.level} - [{mazeConfig.width}][{mazeConfig.height}]");
+            for (int z = 0; z < mazeConfig.height; z++) {
+                for (int x = 0; x < mazeConfig.width; x++) {
                     map[x, z] = (Random.Range(0, 100) < 50 ? MazeCellInfo.Corridor : MazeCellInfo.Wall);
                 }
             }
         }
 
         protected virtual void AddRooms(int numberOfRooms, int minSize, int maxSize) {
+            Debug.Log($"Adding {numberOfRooms} Rooms for map level {mazeConfig.level} - [{mazeConfig.width}][{mazeConfig.height}]");
             for (int room = 1; room <= numberOfRooms; room++) {
                 var width = Random.Range(minSize, maxSize + 1);
                 var height = Random.Range(minSize, maxSize + 1);
-                var startX = Random.Range(3, mazeSize.width - width - 3);
-                var startZ = Random.Range(3, mazeSize.height - height - 3);
+                var startX = Random.Range(3, mazeConfig.width - width - 3);
+                var startZ = Random.Range(3, mazeConfig.height - height - 3);
 
+                Debug.Log($"Adding room {room} - Size:[{width}][{height}] - Start:[{startX}][{startZ}]");
+                
                 for (var x = startX; x <= startX + width; x++) {
                     for (var z = startZ; z <= startZ + height; z++) {
                         map[x, z] = MazeCellInfo.Corridor;
@@ -119,66 +137,73 @@ namespace narkdagas.mazegenerator {
         }
 
         private void DrawMap() {
+            Debug.Log($"Drawing map level {mazeConfig.level} - [{mazeConfig.width}][{mazeConfig.height}]");
+            int height = mazeConfig.level * scale * 2;
             Dictionary<Vector3, bool> pillarsLocations = new Dictionary<Vector3, bool>();
-            for (int z = 0; z < mazeSize.height; z++) {
-                for (int x = 0; x < mazeSize.width; x++) {
-                    Vector3 pos = new Vector3(x * scale, 0, z * scale);
+            for (byte z = 0; z < mazeConfig.height; z++) {
+                for (byte x = 0; x < mazeConfig.width; x++) {
+                    Vector3 pos = new Vector3(x * scale, height, z * scale);
                     if (map[x, z] == MazeCellInfo.Corridor) {
                         var neighbours = map.GetAllNeighboursForMazePiece(x, z);
-                        switch (neighbours.MatchMazePiece()) {
-                            case MazePiece.CorridorHorizontal:
-                                Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
+                        PieceType pieceType = neighbours.MatchMazePiece();
+                        GameObject pieceInstance = null;
+                        switch (pieceType) {
+                            case PieceType.CorridorHorizontal:
+                                pieceInstance = Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
-                            case MazePiece.CorridorVertical:
-                                Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.identity);
+                            case PieceType.CorridorVertical:
+                                pieceInstance = Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
-                            case MazePiece.CornerTopRight:
-                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.identity);
+                            case PieceType.CornerTopRight:
+                                pieceInstance = Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
-                            case MazePiece.CornerTopLeft:
-                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
+                            case PieceType.CornerTopLeft:
+                                pieceInstance = Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
                                 break;
-                            case MazePiece.CornerBottomRight:
-                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
+                            case PieceType.CornerBottomRight:
+                                pieceInstance = Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
-                            case MazePiece.CornerBottomLeft:
-                                Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
+                            case PieceType.CornerBottomLeft:
+                                pieceInstance = Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
                                 break;
-                            case MazePiece.DeadEndTop:
-                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
+                            case PieceType.DeadEndTop:
+                                pieceInstance = Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
                                 break;
-                            case MazePiece.DeadEndRight:
-                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
+                            case PieceType.DeadEndRight:
+                                pieceInstance = Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
                                 break;
-                            case MazePiece.DeadEndLeft:
-                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
+                            case PieceType.DeadEndLeft:
+                                pieceInstance = Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
-                            case MazePiece.DeadEndBottom:
-                                Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.identity);
+                            case PieceType.DeadEndBottom:
+                                pieceInstance = Instantiate(deadEndPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
-                            case MazePiece.JunctionTop:
-                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
+                            case PieceType.JunctionTop:
+                                pieceInstance = Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 270, 0));
                                 break;
-                            case MazePiece.JunctionRight:
-                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.identity);
+                            case PieceType.JunctionRight:
+                                pieceInstance = Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
-                            case MazePiece.JunctionBottom:
-                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
+                            case PieceType.JunctionBottom:
+                                pieceInstance = Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
-                            case MazePiece.JunctionLeft:
-                                Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
+                            case PieceType.JunctionLeft:
+                                pieceInstance = Instantiate(junctionPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 180, 0));
                                 break;
-                            case MazePiece.Intersection:
-                                Instantiate(intersectionPieces.GetRandomPiece(), pos, Quaternion.identity);
+                            case PieceType.Intersection:
+                                pieceInstance = Instantiate(intersectionPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
-                            case MazePiece.OpenRoom:
-                                Instantiate(flooredCeiling, pos, Quaternion.identity);
+                            case PieceType.OpenRoom:
+                                pieceInstance = Instantiate(flooredCeiling, pos, Quaternion.identity);
                                 break;
-                            case MazePiece.Custom:
+                            case PieceType.Custom:
                                 //DrawCustomPieceOrig(pos, map.GetCrossNeighboursForMazePiece(x, z));
-                                DrawWallsAndPillars(pos, neighbours, pillarsLocations);
+                                pieceInstance = DrawWallsAndPillars(pos, neighbours, pillarsLocations);
                                 break;
                         }
+
+                        pieces[x, z].pieceType = pieceType;
+                        pieces[x, z].pieceModel = pieceInstance;
                     }
                 }
             }
@@ -193,8 +218,8 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        private void DrawWallsAndPillars(Vector3 pos, byte[] neighbours, IDictionary<Vector3, bool> pillars) {
-            Instantiate(flooredCeiling, pos, Quaternion.identity);
+        private GameObject DrawWallsAndPillars(Vector3 pos, byte[] neighbours, IDictionary<Vector3, bool> pillars) {
+            
             //TOP = 1 / RIGHT = 3 / DOWN = 5 / LEFT = 7
             //The left pillar is y-rotated -90, and each pillar should have the same rotation of its wall
             //Using circular Index to reference neighbours
@@ -209,27 +234,33 @@ namespace narkdagas.mazegenerator {
                     wall.name = "Wall";
 
                     Vector3 rightPillarPos = (neighbourRelativeCoords.CircularIndexValue(side + 1) * scale / 2) + posInt;
-                    if (neighbours.CircularIndexValue(side + 1) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side + 2) == MazeCellInfo.Corridor && !pillars.ContainsKey(rightPillarPos)) {
-                        GameObject pilar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles));
-                        pilar.name = wall.name + $"_RightPilar({rightPillarPos.x},{rightPillarPos.y})";
+                    if (neighbours.CircularIndexValue(side + 1) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side + 2) == MazeCellInfo.Corridor &&
+                        !pillars.ContainsKey(rightPillarPos)) {
+                        GameObject pillar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles));
+                        pillar.name = wall.name + $"_RightPilar({rightPillarPos.x},{rightPillarPos.y})";
+                        pillar.transform.localScale = new Vector3(1.01f, 1, 1.01f);
                         pillars.Add(rightPillarPos, true);
                     }
 
                     Vector3 leftPillarPos = (neighbourRelativeCoords.CircularIndexValue(side - 1) * scale / 2) + posInt;
-                    if (neighbours.CircularIndexValue(side - 2) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side - 1) == MazeCellInfo.Corridor && !pillars.ContainsKey(leftPillarPos)) {
-                        GameObject pilar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles + new Vector3(0, -90, 0)));
-                        pilar.name = wall.name + $"_LeftPilar({leftPillarPos.x},{leftPillarPos.y})";
+                    if (neighbours.CircularIndexValue(side - 2) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side - 1) == MazeCellInfo.Corridor &&
+                        !pillars.ContainsKey(leftPillarPos)) {
+                        GameObject pillar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles + new Vector3(0, -90, 0)));
+                        pillar.transform.localScale = new Vector3(1.01f, 1, 1.01f);
+                        pillar.name = wall.name + $"_LeftPilar({leftPillarPos.x},{leftPillarPos.y})";
                         pillars.Add(leftPillarPos, true);
                     }
                 }
 
                 rotation++;
             }
+            
+            return Instantiate(flooredCeiling, pos, Quaternion.identity);
         }
 
         private void PlacePlayer() {
-            for (int x = 1; x < mazeSize.width - 1; x++) {
-                for (int z = 1; z < mazeSize.height - 1; z++) {
+            for (int x = 1; x < mazeConfig.width - 1; x++) {
+                for (int z = 1; z < mazeConfig.height - 1; z++) {
                     if (map[x, z] == MazeCellInfo.Corridor) {
                         Instantiate(playerPrefab, new Vector3(x * 6, 0, z * 6), Quaternion.identity);
                         return;
@@ -274,16 +305,16 @@ namespace narkdagas.mazegenerator {
 
         protected bool IsInsideMaze(int x, int z) {
             return x > 0 &&
-                   x < mazeSize.width - 1 &&
+                   x < mazeConfig.width - 1 &&
                    z > 0 &&
-                   z < mazeSize.height - 1;
+                   z < mazeConfig.height - 1;
         }
 
         protected bool IsOutsideMaze(int x, int z) {
             bool result = x <= 0 ||
-                          x >= mazeSize.width - 1 ||
+                          x >= mazeConfig.width - 1 ||
                           z <= 0 ||
-                          z >= mazeSize.height - 1;
+                          z >= mazeConfig.height - 1;
             return result;
         }
     }

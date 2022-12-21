@@ -1,8 +1,10 @@
 using System.Linq;
+using UnityEngine;
 
 namespace narkdagas.mazegenerator {
     
-    public enum MazePiece {
+    public enum PieceType {
+        None,
         CorridorHorizontal, 
         CorridorVertical, 
         CornerTopRight, 
@@ -19,9 +21,21 @@ namespace narkdagas.mazegenerator {
         JunctionLeft,
         Intersection,
         OpenRoom,
+        ManholeUp,
+        ManholeDown,
         Custom
     }
-        
+
+    public struct PieceData {
+        public PieceType pieceType;
+        public GameObject pieceModel;
+
+        public PieceData(PieceType type, GameObject model) {
+            pieceType = type;
+            pieceModel = model;
+        }
+    }
+    
     static class MazePieceExtensions {
         
         // MATCHING CLOCKWISE FROM TOP-LEFT
@@ -32,7 +46,7 @@ namespace narkdagas.mazegenerator {
         //          |---|---|---|
         //          | 6 | 5 | 4 |
         //          |---|---|---|
-        public static MazePiece MatchMazePiece(this byte[] neighbours) {
+        public static PieceType MatchMazePiece(this byte[] neighbours) {
 
             if (Enumerable.SequenceEqual(neighbours, new [] {
                     MazeGenerator.MazeCellInfo.Corridor, 
@@ -43,7 +57,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.OpenRoom;
+                })) return PieceType.OpenRoom;
             
             if (Enumerable.SequenceEqual(neighbours, new [] {
                     MazeGenerator.MazeCellInfo.Wall,
@@ -54,7 +68,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.Intersection;
+                })) return PieceType.Intersection;
             
             // T-Junctions
             if (neighbours.MatchPattern(new [] {
@@ -66,7 +80,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.JunctionTop;
+                })) return PieceType.JunctionTop;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Any, 
                     MazeGenerator.MazeCellInfo.Corridor,
@@ -76,7 +90,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Any, 
                     MazeGenerator.MazeCellInfo.Wall
-                })) return MazePiece.JunctionRight;
+                })) return PieceType.JunctionRight;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Wall,
@@ -86,7 +100,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.JunctionBottom;
+                })) return PieceType.JunctionBottom;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Wall, 
                     MazeGenerator.MazeCellInfo.Corridor, 
@@ -96,7 +110,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.JunctionLeft;
+                })) return PieceType.JunctionLeft;
             
             //CORNERS
             if (neighbours.MatchPattern(new [] {
@@ -108,7 +122,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Any, 
                     MazeGenerator.MazeCellInfo.Wall
-                })) return MazePiece.CornerTopRight;
+                })) return PieceType.CornerTopRight;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Wall, 
                     MazeGenerator.MazeCellInfo.Corridor, 
@@ -118,7 +132,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Any, 
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.CornerTopLeft;
+                })) return PieceType.CornerTopLeft;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Any, 
                     MazeGenerator.MazeCellInfo.Wall, 
@@ -128,7 +142,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Any, 
                     MazeGenerator.MazeCellInfo.Wall
-                })) return MazePiece.CornerBottomRight;
+                })) return PieceType.CornerBottomRight;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Any, 
                     MazeGenerator.MazeCellInfo.Wall, 
@@ -138,7 +152,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Wall, 
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.CornerBottomLeft;
+                })) return PieceType.CornerBottomLeft;
 
             //Corridors
             if (neighbours.MatchPattern(new [] {
@@ -150,7 +164,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.CorridorHorizontal;
+                })) return PieceType.CorridorHorizontal;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Corridor,
@@ -160,7 +174,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Wall
-                })) return MazePiece.CorridorVertical;
+                })) return PieceType.CorridorVertical;
             
             //Dead Ends
             if (neighbours.MatchPattern(new [] {
@@ -172,7 +186,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Wall
-                })) return MazePiece.DeadEndTop;
+                })) return PieceType.DeadEndTop;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Wall,
@@ -182,7 +196,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Wall
-                })) return MazePiece.DeadEndRight;
+                })) return PieceType.DeadEndRight;
             if (neighbours.MatchPattern(new [] {
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Wall,
@@ -192,7 +206,7 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Corridor,
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Wall
-                })) return MazePiece.DeadEndBottom;
+                })) return PieceType.DeadEndBottom;
             if (neighbours.MatchPattern( new [] {
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Wall,
@@ -202,10 +216,10 @@ namespace narkdagas.mazegenerator {
                     MazeGenerator.MazeCellInfo.Wall,
                     MazeGenerator.MazeCellInfo.Any,
                     MazeGenerator.MazeCellInfo.Corridor
-                })) return MazePiece.DeadEndLeft;
+                })) return PieceType.DeadEndLeft;
             
             
-            return MazePiece.Custom;
+            return PieceType.Custom;
         }
 
         // CROSS NEIGHBOURS FROM TOP

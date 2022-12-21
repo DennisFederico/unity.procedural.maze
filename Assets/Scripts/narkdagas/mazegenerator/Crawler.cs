@@ -3,15 +3,15 @@ using UnityEngine;
 namespace narkdagas.mazegenerator {
     public class Crawler : MazeGenerator {
         protected override void GenerateMap() {
-            var minHeight = mazeSize.height / 6;
-            SingleHorizontalCrawl(Random.Range(minHeight, mazeSize.height - minHeight));
-            var minWidth = mazeSize.width / 6;
-            SingleVerticalCrawl(Random.Range(minWidth, mazeSize.width - minWidth));
+            var minHeight = mazeConfig.height / 6;
+            SingleHorizontalCrawl(Random.Range(minHeight, mazeConfig.height - minHeight));
+            var minWidth = mazeConfig.width / 6;
+            SingleVerticalCrawl(Random.Range(minWidth, mazeConfig.width - minWidth));
 
-            SingleHorizontalCrawl(Random.Range(minHeight, mazeSize.height - minHeight));
-            SingleVerticalCrawl(Random.Range(minWidth, mazeSize.width - minWidth));
-            SingleHorizontalCrawl(Random.Range(minHeight, mazeSize.height - minHeight));
-            SingleVerticalCrawl(Random.Range(minWidth, mazeSize.width - minWidth));
+            SingleHorizontalCrawl(Random.Range(minHeight, mazeConfig.height - minHeight));
+            SingleVerticalCrawl(Random.Range(minWidth, mazeConfig.width - minWidth));
+            SingleHorizontalCrawl(Random.Range(minHeight, mazeConfig.height - minHeight));
+            SingleVerticalCrawl(Random.Range(minWidth, mazeConfig.width - minWidth));
         }
 
         private void SingleHorizontalCrawl(int startZ) {
@@ -27,7 +27,7 @@ namespace narkdagas.mazegenerator {
                     z += Random.Range(-1, 2);
                 }
 
-                done |= (x < 0 || x >= mazeSize.width || z < 0 || z >= mazeSize.height);
+                done |= (x < 0 || x >= mazeConfig.width || z < 0 || z >= mazeConfig.height);
             }
         }
 
@@ -44,7 +44,7 @@ namespace narkdagas.mazegenerator {
                     x += Random.Range(-1, 2);
                 }
 
-                done |= (x < 0 || x >= mazeSize.width || z < 0 || z >= mazeSize.height);
+                done |= (x < 0 || x >= mazeConfig.width || z < 0 || z >= mazeConfig.height);
             }
         }
     }

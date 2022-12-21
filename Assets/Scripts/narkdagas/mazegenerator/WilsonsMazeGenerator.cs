@@ -8,8 +8,8 @@ namespace narkdagas.mazegenerator {
 
         protected override void GenerateMap() {
             // Starting Cell
-            int x = Random.Range(1, mazeSize.width - 1);
-            int z = Random.Range(1, mazeSize.height - 1);
+            int x = Random.Range(1, mazeConfig.width - 1);
+            int z = Random.Range(1, mazeConfig.height - 1);
             map[x, z] = MazeCellInfo.Maze;
 
             int tries = 0;
@@ -23,8 +23,8 @@ namespace narkdagas.mazegenerator {
 
         private int GetAvailableCells() {
             _availableStartCells.Clear();
-            for (int z = 1; z < mazeSize.height - 1; z++) {
-                for (int x = 1; x < mazeSize.width - 1; x++) {
+            for (int z = 1; z < mazeConfig.height - 1; z++) {
+                for (int x = 1; x < mazeConfig.width - 1; x++) {
                     if (map[x, z] == MazeCellInfo.Wall &&
                         CountCrossNeighboursOfType(x, z) == 0 &&
                         CountCrossNeighboursOfType(x, z, MazeCellInfo.Maze) == 0) {

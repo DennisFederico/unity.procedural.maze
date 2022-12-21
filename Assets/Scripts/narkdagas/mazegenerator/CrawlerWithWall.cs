@@ -3,14 +3,14 @@ using UnityEngine;
 namespace narkdagas.mazegenerator {
     public class CrawlerWithWall : MazeGenerator {
         protected override void GenerateMap() {
-            var minHeight = mazeSize.height / 6;
-            SingleHorizontalCrawl(Random.Range(minHeight, mazeSize.height - minHeight));
-            SingleHorizontalCrawl(Random.Range(minHeight, mazeSize.height - minHeight));
+            var minHeight = mazeConfig.height / 6;
+            SingleHorizontalCrawl(Random.Range(minHeight, mazeConfig.height - minHeight));
+            SingleHorizontalCrawl(Random.Range(minHeight, mazeConfig.height - minHeight));
 
-            var minWidth = mazeSize.width / 6;
-            SingleVerticalCrawl(Random.Range(minWidth, mazeSize.width - minWidth));
-            SingleVerticalCrawl(Random.Range(minWidth, mazeSize.width - minWidth));
-            SingleVerticalCrawl(Random.Range(minWidth, mazeSize.width - minWidth));
+            var minWidth = mazeConfig.width / 6;
+            SingleVerticalCrawl(Random.Range(minWidth, mazeConfig.width - minWidth));
+            SingleVerticalCrawl(Random.Range(minWidth, mazeConfig.width - minWidth));
+            SingleVerticalCrawl(Random.Range(minWidth, mazeConfig.width - minWidth));
         }
 
         private void SingleHorizontalCrawl(int startZ) {
@@ -26,7 +26,7 @@ namespace narkdagas.mazegenerator {
                     z += Random.Range(-1, 2);
                 }
 
-                done |= (x < 1 || x >= mazeSize.width - 1 || z < 1 || z >= mazeSize.height - 1);
+                done |= (x < 1 || x >= mazeConfig.width - 1 || z < 1 || z >= mazeConfig.height - 1);
             }
         }
 
@@ -43,7 +43,7 @@ namespace narkdagas.mazegenerator {
                     x += Random.Range(-1, 2);
                 }
 
-                done |= (x < 1 || x >= mazeSize.width - 1 || z < 1 || z >= mazeSize.height - 1);
+                done |= (x < 1 || x >= mazeConfig.width - 1 || z < 1 || z >= mazeConfig.height - 1);
             }
         }
     }

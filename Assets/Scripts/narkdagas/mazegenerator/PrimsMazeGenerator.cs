@@ -4,8 +4,8 @@ using UnityEngine;
 namespace narkdagas.mazegenerator {
     public class PrimsMazeGenerator : MazeGenerator {
         protected override void GenerateMap() {
-            int x = Random.Range(1, mazeSize.width - 1);
-            int z = Random.Range(1, mazeSize.height - 1);
+            int x = Random.Range(1, mazeConfig.width - 1);
+            int z = Random.Range(1, mazeConfig.height - 1);
             map[x, z] = 0;
 
             List<MazeCellInfo> walls = new List<MazeCellInfo>();

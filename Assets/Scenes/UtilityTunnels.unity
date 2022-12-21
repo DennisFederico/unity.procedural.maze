@@ -238,6 +238,81 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &410463126
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 410463128}
+  - component: {fileID: 410463127}
+  m_Layer: 0
+  m_Name: MazeGenerator (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &410463127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410463126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  genSeed: 432912345
+  scale: 6
+  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
+    type: 3}
+  flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
+    type: 3}
+  wallPieces: []
+  doorwayPieces: []
+  pillarPieces: []
+  straightPieces:
+  - {fileID: 3175656347303996976, guid: ba78a7797041743528e70010bce0bbf3, type: 3}
+  cornerPieces:
+  - {fileID: 2044944532864805919, guid: 231ec78d317d44e6ea005c1c2ed35bf1, type: 3}
+  - {fileID: 8913461824570291771, guid: 2025e86d6e14a4fde93e8e3b0e22117b, type: 3}
+  deadEndPieces:
+  - {fileID: 2757510888306106879, guid: 8baa429958d8145b6812a93de7a7f646, type: 3}
+  junctionPieces:
+  - {fileID: 6203113421899499216, guid: fa270751de4804dd693952789df6c627, type: 3}
+  intersectionPieces:
+  - {fileID: 5829366090054561406, guid: 176827d0b6f0e4b10a8c400e02c573cb, type: 3}
+  numRooms: 0
+  roomMinSize: 6
+  roomMaxSize: 8
+  placePlayer: 0
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    numRooms: 0
+    placePlayer: 0
+  directionRetries: 4
+--- !u!4 &410463128
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410463126}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &834270724
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,12 +342,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mazeSize:
-    width: 40
-    height: 40
+  genSeed: 432912345
   scale: 6
   playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
     type: 3}
+  flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
+    type: 3}
+  wallPieces: []
+  doorwayPieces: []
+  pillarPieces: []
   straightPieces:
   - {fileID: 3175656347303996976, guid: ba78a7797041743528e70010bce0bbf3, type: 3}
   cornerPieces:
@@ -284,6 +362,16 @@ MonoBehaviour:
   - {fileID: 6203113421899499216, guid: fa270751de4804dd693952789df6c627, type: 3}
   intersectionPieces:
   - {fileID: 5829366090054561406, guid: 176827d0b6f0e4b10a8c400e02c573cb, type: 3}
+  numRooms: 0
+  roomMinSize: 6
+  roomMaxSize: 8
+  placePlayer: 1
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    numRooms: 0
+    placePlayer: 0
   directionRetries: 4
 --- !u!4 &834270726
 Transform:
@@ -298,7 +386,82 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1007964034
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1007964036}
+  - component: {fileID: 1007964035}
+  m_Layer: 0
+  m_Name: MazeGenerator (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1007964035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007964034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  genSeed: 432912345
+  scale: 6
+  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
+    type: 3}
+  flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
+    type: 3}
+  wallPieces: []
+  doorwayPieces: []
+  pillarPieces: []
+  straightPieces:
+  - {fileID: 3175656347303996976, guid: ba78a7797041743528e70010bce0bbf3, type: 3}
+  cornerPieces:
+  - {fileID: 2044944532864805919, guid: 231ec78d317d44e6ea005c1c2ed35bf1, type: 3}
+  - {fileID: 8913461824570291771, guid: 2025e86d6e14a4fde93e8e3b0e22117b, type: 3}
+  deadEndPieces:
+  - {fileID: 2757510888306106879, guid: 8baa429958d8145b6812a93de7a7f646, type: 3}
+  junctionPieces:
+  - {fileID: 6203113421899499216, guid: fa270751de4804dd693952789df6c627, type: 3}
+  intersectionPieces:
+  - {fileID: 5829366090054561406, guid: 176827d0b6f0e4b10a8c400e02c573cb, type: 3}
+  numRooms: 0
+  roomMinSize: 6
+  roomMaxSize: 8
+  placePlayer: 0
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    numRooms: 0
+    placePlayer: 0
+  directionRetries: 4
+--- !u!4 &1007964036
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007964034}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1160234425
 GameObject:
@@ -348,4 +511,136 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1257761698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1257761700}
+  - component: {fileID: 1257761699}
+  m_Layer: 0
+  m_Name: MazeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1257761699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257761698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30f2dccb442914ceca357093628ff005, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mazes:
+  - {fileID: 834270725}
+  - {fileID: 410463127}
+  width: 20
+  depth: 20
+  straightManholeUp: {fileID: 5040069488121431248, guid: a66b74f663f034d118f183d57b10be2c,
+    type: 3}
+  straightManholeDown: {fileID: 4791307707005690645, guid: 5957457e4202044ea9c1aabeb5e80634,
+    type: 3}
+  deadEndManholeUp: {fileID: 6453640923779508103, guid: 17d1d843b8cab45c4992e76e8be58bb9,
+    type: 3}
+  deadEndManholeDown: {fileID: 8610025699023021008, guid: 74fe827bcd2104658afdb0e47816f0ac,
+    type: 3}
+--- !u!4 &1257761700
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257761698}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1324647633
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1324647635}
+  - component: {fileID: 1324647634}
+  m_Layer: 0
+  m_Name: MazeGenerator (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1324647634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324647633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  genSeed: 432912345
+  scale: 6
+  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
+    type: 3}
+  flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
+    type: 3}
+  wallPieces: []
+  doorwayPieces: []
+  pillarPieces: []
+  straightPieces:
+  - {fileID: 3175656347303996976, guid: ba78a7797041743528e70010bce0bbf3, type: 3}
+  cornerPieces:
+  - {fileID: 2044944532864805919, guid: 231ec78d317d44e6ea005c1c2ed35bf1, type: 3}
+  - {fileID: 8913461824570291771, guid: 2025e86d6e14a4fde93e8e3b0e22117b, type: 3}
+  deadEndPieces:
+  - {fileID: 2757510888306106879, guid: 8baa429958d8145b6812a93de7a7f646, type: 3}
+  junctionPieces:
+  - {fileID: 6203113421899499216, guid: fa270751de4804dd693952789df6c627, type: 3}
+  intersectionPieces:
+  - {fileID: 5829366090054561406, guid: 176827d0b6f0e4b10a8c400e02c573cb, type: 3}
+  numRooms: 0
+  roomMinSize: 6
+  roomMaxSize: 8
+  placePlayer: 0
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    numRooms: 0
+    placePlayer: 0
+  directionRetries: 4
+--- !u!4 &1324647635
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324647633}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

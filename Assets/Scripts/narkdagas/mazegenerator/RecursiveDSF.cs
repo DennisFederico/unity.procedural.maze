@@ -1,11 +1,12 @@
 using UnityEngine;
 
 namespace narkdagas.mazegenerator {
-    public class RecursiveDSF : MazeGenerator {
+    public class RecursiveDsf : MazeGenerator {
         public int directionRetries = 3;
 
         protected override void GenerateMap() {
-            InnerGenerateMap(Random.Range(1, mazeSize.width - 1), Random.Range(1, mazeSize.height - 1));
+            Debug.Log($"RecursiveDfs Generate map level {mazeConfig.level} - [{mazeConfig.width}][{mazeConfig.height}]");
+            InnerGenerateMap(Random.Range(1, mazeConfig.width - 1), Random.Range(1, mazeConfig.height - 1));
         }
 
         private void InnerGenerateMap(int x, int z) {
