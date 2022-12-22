@@ -547,6 +547,8 @@ MonoBehaviour:
   mazes:
   - {fileID: 834270725}
   - {fileID: 410463127}
+  - {fileID: 1007964035}
+  - {fileID: 1324647634}
   width: 20
   depth: 20
   straightManholeUp: {fileID: 5040069488121431248, guid: a66b74f663f034d118f183d57b10be2c,
