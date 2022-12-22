@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 namespace narkdagas.mazegenerator {
     public class MazeGenerator : MonoBehaviour {
         [SerializeField] protected int genSeed = 432912345;
-        [SerializeField] private byte scale = 6;
+        [SerializeField] private float pieceScale = 6;
+        [SerializeField] private float heightScale = 2f;
         [SerializeField] protected GameObject playerPrefab;
         [SerializeField] protected GameObject flooredCeiling;
         [SerializeField] protected GameObject[] wallPieces;
@@ -38,22 +38,25 @@ namespace narkdagas.mazegenerator {
             public byte width;
             public byte height;
             public byte level;
-            public byte scale;
+            public float pieceScale;
+            public float heightScale;
             public byte numRooms;
             public bool placePlayer;
 
-            public MazeConfig(byte width, byte height, byte level = 0, byte scale = 6, byte numRooms = 0, bool placePlayer = false) {
+            public MazeConfig(byte width, byte height, byte level = 0, float pieceScale = 6, float heightScale = 2, byte numRooms = 0, bool placePlayer = false) {
                 this.width = width;
                 this.height = height;
                 this.level = level;
-                this.scale = scale;
+                this.pieceScale = pieceScale;
+                this.heightScale = heightScale;
                 this.numRooms = numRooms;
                 this.placePlayer = placePlayer;
             }
         }
 
         public struct MazeCellInfo {
-            public int x, z;
+            public readonly int x;
+            public readonly int z;
             public const byte Wall = 1;
             public const byte Corridor = 0;
             public const byte Maze = 2;
@@ -85,13 +88,13 @@ namespace narkdagas.mazegenerator {
             new(-1, 0, 0)
         };
 
-        private void Awake() {
-            //Random.InitState(genSeed);
-        }
+        // private void Awake() {
+        //     //Random.InitState(genSeed);
+        // }
 
         // Start is called before the first frame update
         public void Build(byte width, byte height, byte level) {
-            mazeConfig = new MazeConfig(width, height, level, scale, numRooms, placePlayer);
+            mazeConfig = new MazeConfig(width, height, level, pieceScale, heightScale, numRooms, placePlayer);
             InitializeMap();
             GenerateMap();
             AddRooms(numRooms, roomSizeRange.x, roomSizeRange.y);
@@ -139,11 +142,11 @@ namespace narkdagas.mazegenerator {
 
         private void DrawMap() {
             Debug.Log($"Drawing map level {mazeConfig.level} - [{mazeConfig.width}][{mazeConfig.height}]");
-            int height = mazeConfig.level * scale * 2;
+            float height = mazeConfig.level * pieceScale * heightScale;
             Dictionary<Vector3, bool> pillarsLocations = new Dictionary<Vector3, bool>();
             for (byte z = 0; z < mazeConfig.height; z++) {
                 for (byte x = 0; x < mazeConfig.width; x++) {
-                    Vector3 pos = new Vector3(x * scale, height, z * scale);
+                    Vector3 pos = new Vector3(x * pieceScale, height, z * pieceScale);
                     if (map[x, z] == MazeCellInfo.Corridor) {
                         var neighbours = map.GetAllNeighboursForMazePiece(x, z);
                         PieceType pieceType = neighbours.MatchMazePiece();
@@ -209,14 +212,14 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        private void DrawCustomPieceOrig(Vector3 pos, byte[] neighbours) {
-            Instantiate(flooredCeiling, pos, Quaternion.identity);
-            for (int i = 0; i < neighbours.Length; i++) {
-                if (neighbours[i] == MazeCellInfo.Wall) {
-                    Instantiate(wallPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90 * i, 0));
-                }
-            }
-        }
+        // private void DrawCustomPieceOrig(Vector3 pos, byte[] neighbours) {
+        //     Instantiate(flooredCeiling, pos, Quaternion.identity);
+        //     for (int i = 0; i < neighbours.Length; i++) {
+        //         if (neighbours[i] == MazeCellInfo.Wall) {
+        //             Instantiate(wallPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90 * i, 0));
+        //         }
+        //     }
+        // }
 
         private GameObject DrawWallsAndPillars(Vector3 pos, byte[] neighbours, IDictionary<Vector3, bool> pillars) {
             
@@ -233,7 +236,7 @@ namespace narkdagas.mazegenerator {
                     GameObject wall = Instantiate(wallPieces.GetRandomPiece(), pos, wallRotation);
                     wall.name = "Wall";
 
-                    Vector3 rightPillarPos = (neighbourRelativeCoords.CircularIndexValue(side + 1) * scale / 2) + posInt;
+                    Vector3 rightPillarPos = (neighbourRelativeCoords.CircularIndexValue(side + 1) * pieceScale / 2) + posInt;
                     if (neighbours.CircularIndexValue(side + 1) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side + 2) == MazeCellInfo.Corridor &&
                         !pillars.ContainsKey(rightPillarPos)) {
                         GameObject pillar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles));
@@ -242,7 +245,7 @@ namespace narkdagas.mazegenerator {
                         pillars.Add(rightPillarPos, true);
                     }
 
-                    Vector3 leftPillarPos = (neighbourRelativeCoords.CircularIndexValue(side - 1) * scale / 2) + posInt;
+                    Vector3 leftPillarPos = (neighbourRelativeCoords.CircularIndexValue(side - 1) * pieceScale / 2) + posInt;
                     if (neighbours.CircularIndexValue(side - 2) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side - 1) == MazeCellInfo.Corridor &&
                         !pillars.ContainsKey(leftPillarPos)) {
                         GameObject pillar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles + new Vector3(0, -90, 0)));

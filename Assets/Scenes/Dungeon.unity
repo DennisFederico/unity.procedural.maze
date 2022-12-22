@@ -153,7 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   genSeed: 432912345
-  scale: 6
+  pieceScale: 6
+  heightScale: 1.5
   playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
     type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
@@ -176,9 +177,17 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
   numRooms: 2
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 0
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    pieceScale: 0
+    heightScale: 0
+    numRooms: 0
+    placePlayer: 0
   directionRetries: 4
 --- !u!4 &177595010
 Transform:
@@ -340,7 +349,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   genSeed: 432912345
-  scale: 6
+  pieceScale: 6
+  heightScale: 1.5
   playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
     type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
@@ -363,9 +373,17 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
   numRooms: 2
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 0
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    pieceScale: 0
+    heightScale: 0
+    numRooms: 0
+    placePlayer: 0
   directionRetries: 4
 --- !u!4 &359683828
 Transform:
@@ -412,7 +430,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   genSeed: 432912345
-  scale: 6
+  pieceScale: 6
+  heightScale: 1.5
   playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
     type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
@@ -435,9 +454,17 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
   numRooms: 2
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 0
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    pieceScale: 0
+    heightScale: 0
+    numRooms: 0
+    placePlayer: 0
   directionRetries: 4
 --- !u!4 &807102344
 Transform:
@@ -463,7 +490,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1004023384}
-  - component: {fileID: 1004023383}
+  - component: {fileID: 1004023385}
   m_Layer: 0
   m_Name: MazeManager
   m_TagString: Untagged
@@ -471,26 +498,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1004023383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1004023382}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30f2dccb442914ceca357093628ff005, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mazes:
-  - {fileID: 1966728219}
-  - {fileID: 359683827}
-  - {fileID: 1547500554}
-  - {fileID: 177595009}
-  - {fileID: 807102343}
-  width: 30
-  height: 30
 --- !u!4 &1004023384
 Transform:
   m_ObjectHideFlags: 0
@@ -506,6 +513,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1004023385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004023382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99edac6ebe0a44115a8bde42672ff03d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mazes:
+  - {fileID: 1966728219}
+  - {fileID: 359683827}
+  - {fileID: 177595009}
+  - {fileID: 807102343}
+  width: 50
+  depth: 50
+  deadEndStair: {fileID: 307388870783284033, guid: 613202f2f8fd844ad91bb024bd85f75c,
+    type: 3}
 --- !u!1 &1160234425
 GameObject:
   m_ObjectHideFlags: 0
@@ -585,7 +613,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   genSeed: 432912345
-  scale: 6
+  pieceScale: 6
+  heightScale: 1.5
   playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
     type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
@@ -608,9 +637,17 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
   numRooms: 2
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 0
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    pieceScale: 0
+    heightScale: 0
+    numRooms: 0
+    placePlayer: 0
   directionRetries: 4
 --- !u!4 &1547500555
 Transform:
@@ -657,7 +694,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   genSeed: 432912345
-  scale: 6
+  pieceScale: 6
+  heightScale: 1.5
   playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
     type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
@@ -680,9 +718,17 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
   numRooms: 2
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 1
+  mazeConfig:
+    width: 0
+    height: 0
+    level: 0
+    pieceScale: 0
+    heightScale: 0
+    numRooms: 0
+    placePlayer: 0
   directionRetries: 4
 --- !u!4 &1966728220
 Transform:
