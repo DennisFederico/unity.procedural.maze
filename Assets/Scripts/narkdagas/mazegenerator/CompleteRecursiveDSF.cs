@@ -10,7 +10,7 @@ namespace narkdagas.mazegenerator {
             if (CountCrossNeighboursOfType(x, z) >= 2) return;
             map[x, z] = 0;
 
-            var randomDirection = directions.ShuffleNew();
+            var randomDirection = directions.ShuffleAsNewList();
             foreach (var dir in randomDirection) {
                 InnerGenerateMap(x + dir.x, z + dir.z);
             }

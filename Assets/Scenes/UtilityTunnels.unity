@@ -288,13 +288,14 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 5829366090054561406, guid: 176827d0b6f0e4b10a8c400e02c573cb, type: 3}
   numRooms: 0
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 0
   mazeConfig:
     width: 0
     height: 0
     level: 0
+    scale: 0
     numRooms: 0
     placePlayer: 0
   directionRetries: 4
@@ -363,13 +364,14 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 5829366090054561406, guid: 176827d0b6f0e4b10a8c400e02c573cb, type: 3}
   numRooms: 0
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 1
   mazeConfig:
     width: 0
     height: 0
     level: 0
+    scale: 0
     numRooms: 0
     placePlayer: 0
   directionRetries: 4
@@ -438,13 +440,14 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 5829366090054561406, guid: 176827d0b6f0e4b10a8c400e02c573cb, type: 3}
   numRooms: 0
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 0
   mazeConfig:
     width: 0
     height: 0
     level: 0
+    scale: 0
     numRooms: 0
     placePlayer: 0
   directionRetries: 4
@@ -619,13 +622,14 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 5829366090054561406, guid: 176827d0b6f0e4b10a8c400e02c573cb, type: 3}
   numRooms: 0
-  roomMinSize: 6
-  roomMaxSize: 8
+  roomSizeRange: {x: 3, y: 6}
+  numLaddersRange: {x: 1, y: 3}
   placePlayer: 0
   mazeConfig:
     width: 0
     height: 0
     level: 0
+    scale: 0
     numRooms: 0
     placePlayer: 0
   directionRetries: 4

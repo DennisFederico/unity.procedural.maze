@@ -75,7 +75,7 @@ namespace narkdagas.mazegenerator {
             }
 
             if (isValidPath) {
-                inWalk.Add(new MazeCellInfo(x, z, MazeCellInfo.Corridor));
+                inWalk.Add(new MazeCellInfo(x, z));
                 Debug.Log("Found Path");
                 foreach (MazeCellInfo cellInfo in inWalk) {
                     map[cellInfo.x, cellInfo.z] = 2;

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 namespace narkdagas.mazegenerator {
     public class MazeGenerator : MonoBehaviour {
         [SerializeField] protected int genSeed = 432912345;
-        [SerializeField] public int scale = 6;
+        [SerializeField] private byte scale = 6;
         [SerializeField] protected GameObject playerPrefab;
         [SerializeField] protected GameObject flooredCeiling;
         [SerializeField] protected GameObject[] wallPieces;
@@ -17,10 +18,10 @@ namespace narkdagas.mazegenerator {
         [SerializeField] protected GameObject[] deadEndPieces;
         [SerializeField] protected GameObject[] junctionPieces;
         [SerializeField] protected GameObject[] intersectionPieces;
-        [SerializeField] protected byte numRooms = 3;
-        [SerializeField] protected byte roomMinSize = 3;
-        [SerializeField] protected byte roomMaxSize = 6;
-        [SerializeField] protected bool placePlayer = false;
+        [SerializeField] private byte numRooms = 3;
+        [SerializeField] public Vector2Int roomSizeRange = new(3, 6);
+        [SerializeField] public Vector2Int numLaddersRange = new (1,3);
+        [SerializeField] protected bool placePlayer;
         public MazeConfig mazeConfig;
         protected byte[,] map;
         public PieceData[,] pieces;
@@ -37,13 +38,15 @@ namespace narkdagas.mazegenerator {
             public byte width;
             public byte height;
             public byte level;
+            public byte scale;
             public byte numRooms;
             public bool placePlayer;
 
-            public MazeConfig(byte width, byte height, byte level = 0, byte numRooms = 0, bool placePlayer = false) {
+            public MazeConfig(byte width, byte height, byte level = 0, byte scale = 6, byte numRooms = 0, bool placePlayer = false) {
                 this.width = width;
                 this.height = height;
                 this.level = level;
+                this.scale = scale;
                 this.numRooms = numRooms;
                 this.placePlayer = placePlayer;
             }
@@ -51,16 +54,14 @@ namespace narkdagas.mazegenerator {
 
         public struct MazeCellInfo {
             public int x, z;
-            public byte wallType;
             public const byte Wall = 1;
             public const byte Corridor = 0;
             public const byte Maze = 2;
             public const byte Any = 9;
 
-            public MazeCellInfo(int x, int z, byte wallType = Wall) {
+            public MazeCellInfo(int x, int z) {
                 this.x = x;
                 this.z = z;
-                this.wallType = wallType;
             }
         }
 
@@ -90,10 +91,10 @@ namespace narkdagas.mazegenerator {
 
         // Start is called before the first frame update
         public void Build(byte width, byte height, byte level) {
-            mazeConfig = new MazeConfig(width, height, level, numRooms, placePlayer);
+            mazeConfig = new MazeConfig(width, height, level, scale, numRooms, placePlayer);
             InitializeMap();
             GenerateMap();
-            AddRooms(numRooms, roomMinSize, roomMaxSize);
+            AddRooms(numRooms, roomSizeRange.x, roomSizeRange.y);
             DrawMap();
             if (placePlayer) PlacePlayer();
         }
@@ -202,8 +203,7 @@ namespace narkdagas.mazegenerator {
                                 break;
                         }
 
-                        pieces[x, z].pieceType = pieceType;
-                        pieces[x, z].pieceModel = pieceInstance;
+                        pieces[x, z] = new (x, z, pieceType, pieceInstance);
                     }
                 }
             }

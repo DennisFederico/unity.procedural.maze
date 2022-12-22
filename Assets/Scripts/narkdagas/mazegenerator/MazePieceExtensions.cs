@@ -21,16 +21,19 @@ namespace narkdagas.mazegenerator {
         JunctionLeft,
         Intersection,
         OpenRoom,
-        ManholeUp,
-        ManholeDown,
+        LadderUp,
+        LadderDown,
         Custom
     }
 
     public struct PieceData {
+        public byte posX, posZ;
         public PieceType pieceType;
         public GameObject pieceModel;
 
-        public PieceData(PieceType type, GameObject model) {
+        public PieceData(byte x, byte z, PieceType type, GameObject model) {
+            posX = x;
+            posZ = z;
             pieceType = type;
             pieceModel = model;
         }

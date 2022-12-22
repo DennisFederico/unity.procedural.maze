@@ -4,19 +4,19 @@ using UnityEngine;
 
 namespace narkdagas.mazegenerator {
     public static class MazeGeneratorExtensions {
-        private static readonly System.Random _rng = new();
+        private static readonly System.Random Rnd = new();
 
-        public static void Shuffle<T>(this IList<T> list) {
+        public static void ShuffleCurrent<T>(this IList<T> list) {
             var n = list.Count;
             while (n > 1) {
                 n--;
-                var k = _rng.Next(n + 1);
+                var k = Rnd.Next(n + 1);
                 (list[k], list[n]) = (list[n], list[k]); //SWAP
             }
         }
 
-        public static IList<T> ShuffleNew<T>(this IList<T> list) {
-            return list.OrderBy(a => _rng.Next()).ToList();
+        public static IList<T> ShuffleAsNewList<T>(this IList<T> list) {
+            return list.OrderBy(a => Rnd.Next()).ToList();
         }
 
         public static GameObject GetRandomPiece(this GameObject[] pieces) {
