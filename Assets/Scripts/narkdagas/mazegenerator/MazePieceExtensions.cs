@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -283,6 +284,25 @@ namespace narkdagas.mazegenerator {
             }
             return true;
         }
-    }
 
+        public static IList<PieceData> OfTypes(this PieceData[,] pieces, PieceType[] types) {
+            IList<PieceData> found = new List<PieceData>();
+            foreach (var pieceData in pieces) {
+                if (types.Contains(pieceData.pieceType)) {
+                    found.Add(pieceData);
+                }
+            }
+            return found;
+        }
+        
+        public static IList<PieceData> OfType(this PieceData[] pieces, PieceType type) {
+            IList<PieceData> found = new List<PieceData>();
+            foreach (var pieceData in pieces) {
+                if (pieceData.pieceType == type) {
+                    found.Add(pieceData);
+                }
+            }
+            return found;
+        }
+    }
 }

@@ -42,6 +42,8 @@ namespace narkdagas.mazegenerator {
             public float heightScale;
             public byte numRooms;
             public bool placePlayer;
+            public float xOffset;
+            public float zOffset;
 
             public MazeConfig(byte width, byte height, byte level = 0, float pieceScale = 6, float heightScale = 2, byte numRooms = 0, bool placePlayer = false) {
                 this.width = width;
@@ -51,6 +53,8 @@ namespace narkdagas.mazegenerator {
                 this.heightScale = heightScale;
                 this.numRooms = numRooms;
                 this.placePlayer = placePlayer;
+                xOffset = 0f;
+                zOffset = 0f;
             }
         }
 
@@ -94,6 +98,7 @@ namespace narkdagas.mazegenerator {
 
         // Start is called before the first frame update
         public void Build(byte width, byte height, byte level) {
+            transform.position = Vector3.zero;
             mazeConfig = new MazeConfig(width, height, level, pieceScale, heightScale, numRooms, placePlayer);
             InitializeMap();
             GenerateMap();
@@ -150,7 +155,7 @@ namespace narkdagas.mazegenerator {
                     if (map[x, z] == MazeCellInfo.Corridor) {
                         var neighbours = map.GetAllNeighboursForMazePiece(x, z);
                         PieceType pieceType = neighbours.MatchMazePiece();
-                        GameObject pieceInstance = null;
+                        GameObject pieceInstance;
                         switch (pieceType) {
                             case PieceType.CorridorHorizontal:
                                 pieceInstance = Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
@@ -200,12 +205,12 @@ namespace narkdagas.mazegenerator {
                             case PieceType.OpenRoom:
                                 pieceInstance = Instantiate(flooredCeiling, pos, Quaternion.identity);
                                 break;
-                            case PieceType.Custom:
+                            default: //CUSTOM
                                 //DrawCustomPieceOrig(pos, map.GetCrossNeighboursForMazePiece(x, z));
                                 pieceInstance = DrawWallsAndPillars(pos, neighbours, pillarsLocations);
                                 break;
                         }
-
+                        pieceInstance.transform.SetParent(transform);
                         pieces[x, z] = new (x, z, pieceType, pieceInstance);
                     }
                 }
@@ -235,6 +240,7 @@ namespace narkdagas.mazegenerator {
                     var wallRotation = Quaternion.Euler(0, rotation * 90, 0);
                     GameObject wall = Instantiate(wallPieces.GetRandomPiece(), pos, wallRotation);
                     wall.name = "Wall";
+                    wall.transform.SetParent(transform);
 
                     Vector3 rightPillarPos = (neighbourRelativeCoords.CircularIndexValue(side + 1) * pieceScale / 2) + posInt;
                     if (neighbours.CircularIndexValue(side + 1) == MazeCellInfo.Corridor && neighbours.CircularIndexValue(side + 2) == MazeCellInfo.Corridor &&
@@ -242,6 +248,7 @@ namespace narkdagas.mazegenerator {
                         GameObject pillar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles));
                         pillar.name = wall.name + $"_RightPilar({rightPillarPos.x},{rightPillarPos.y})";
                         pillar.transform.localScale = new Vector3(1.01f, 1, 1.01f);
+                        pillar.transform.SetParent(transform);
                         pillars.Add(rightPillarPos, true);
                     }
 
@@ -251,6 +258,7 @@ namespace narkdagas.mazegenerator {
                         GameObject pillar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles + new Vector3(0, -90, 0)));
                         pillar.transform.localScale = new Vector3(1.01f, 1, 1.01f);
                         pillar.name = wall.name + $"_LeftPilar({leftPillarPos.x},{leftPillarPos.y})";
+                        pillar.transform.SetParent(transform);
                         pillars.Add(leftPillarPos, true);
                     }
                 }
