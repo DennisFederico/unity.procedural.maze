@@ -233,12 +233,15 @@ namespace narkdagas.mazegenerator {
                             case PieceType.OpenRoom:
                                 pieceInstance = Instantiate(flooredCeiling, pos, Quaternion.identity);
                                 break;
-                            default: //CUSTOM
+                            case PieceType.Custom:
                                 //DrawCustomPieceOrig(pos, map.GetCrossNeighboursForMazePiece(x, z));
                                 pieceInstance = DrawWallsAndPillars(pos, neighbours, pillarsLocations);
                                 break;
+                            default:
+                                pieceInstance = null;
+                                break;
                         }
-                        pieceInstance.transform.SetParent(transform);
+                        if (pieceInstance) pieceInstance.transform.SetParent(transform);
                         pieces[x, z] = new (x, z, pieceType, pieceInstance);
                     }
                 }

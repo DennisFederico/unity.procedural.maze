@@ -27,7 +27,7 @@ namespace narkdagas.mazegenerator {
         Custom
     }
 
-    public struct PieceData {
+    public class PieceData {
         public byte posX, posZ;
         public PieceType pieceType;
         public GameObject pieceModel;
@@ -288,6 +288,7 @@ namespace narkdagas.mazegenerator {
         public static IList<PieceData> OfTypes(this PieceData[,] pieces, PieceType[] types) {
             IList<PieceData> found = new List<PieceData>();
             foreach (var pieceData in pieces) {
+                if (pieceData == null) continue;
                 if (types.Contains(pieceData.pieceType)) {
                     found.Add(pieceData);
                 }
@@ -298,7 +299,7 @@ namespace narkdagas.mazegenerator {
         public static IList<PieceData> OfType(this PieceData[] pieces, PieceType type) {
             IList<PieceData> found = new List<PieceData>();
             foreach (var pieceData in pieces) {
-                if (pieceData.pieceType == type) {
+                if (pieceData?.pieceType == type) {
                     found.Add(pieceData);
                 }
             }
