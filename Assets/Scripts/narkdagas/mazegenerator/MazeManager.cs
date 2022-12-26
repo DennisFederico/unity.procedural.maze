@@ -6,8 +6,6 @@ using Random = UnityEngine.Random;
 namespace narkdagas.mazegenerator {
     public class MazeManager : MonoBehaviour {
         public MazeGenerator[] mazes;
-        public byte width;
-        public byte depth;
 
         public GameObject straightManholeUp;
         public GameObject straightManholeDown;
@@ -24,7 +22,7 @@ namespace narkdagas.mazegenerator {
             byte level = 0;
             foreach (MazeGenerator maze in mazes) {
                 Debug.Log($"Building maze for level: {level}");
-                maze.Build(width, depth, level++);
+                maze.Build(level++);
             }
         }
 
@@ -39,9 +37,12 @@ namespace narkdagas.mazegenerator {
 
         //TODO CHECK THE MAZE TYPE FOR VALID CONNECTIONS MATCHES
         IList<(PieceData src, PieceData dst)> GetConnectionCandidates(PieceData[,] srcMaze, PieceData[,] dstMaze) {
+            //THESE CAN ONLY EXIST WITHIN THE SMALLEST "COMMON" SECTION OF THE TWO MAZES
+            int innerWidth = Math.Min(srcMaze.GetLength(0), dstMaze.GetLength(0));
+            int innerDepth = Math.Min(srcMaze.GetLength(1), dstMaze.GetLength(1));
             IList<(PieceData src, PieceData dst)> connections = new List<(PieceData src, PieceData dst)>();
-            for (byte z = 0; z < depth; z++) {
-                for (byte x = 0; x < width; x++) {
+            for (byte z = 0; z < innerDepth; z++) {
+                for (byte x = 0; x < innerWidth; x++) {
                     if (srcMaze[x, z].pieceType == dstMaze[x, z].pieceType) {
                         if (srcMaze[x, z].pieceType is
                             PieceType.CorridorHorizontal or

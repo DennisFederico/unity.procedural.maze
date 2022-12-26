@@ -7,9 +7,6 @@ using Random = UnityEngine.Random;
 namespace narkdagas.mazegenerator {
     public class DungeonMazeManager : MonoBehaviour {
         public MazeGenerator[] mazes;
-        public byte width;
-        public byte depth;
-
         public GameObject deadEndStair;
 
         private void Start() {
@@ -23,7 +20,7 @@ namespace narkdagas.mazegenerator {
             //TODO REBUILD (NEXT?) MAZE UNTIL THERE ARE ENOUGH CONNECTION CANDIDATES - TIMEOUT?? MAX TRIES??
             foreach (MazeGenerator maze in mazes) {
                 Debug.Log($"Building maze for level: {level}");
-                maze.Build(width, depth, level++);
+                maze.Build(level++);
             }
         }
 
@@ -33,7 +30,13 @@ namespace narkdagas.mazegenerator {
                 Debug.Log($"Connecting maze {level} to {level + 1}");
                 var connectionsFound = GetConnectionPairs(mazes[level].pieces, mazes[level + 1].pieces);
                 if (connectionsFound.Count > 0) {
-                    BuildConnections(connectionsFound, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig), mazes[level].numLaddersRange.x, mazes[level].numLaddersRange.y);
+                    int numStairs = Math.Min(Random.Range(mazes[level].numLaddersRange.x, mazes[level].numLaddersRange.y + 1), connectionsFound.Count);
+                    connectionsFound.ShuffleCurrent();
+                    for (var i = 0; i < numStairs; i++) {
+                        var valueTuple = connectionsFound[i];
+                        BuildStair(ref valueTuple.src, ref valueTuple.dst, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig));
+                    }
+                    //BuildConnections(connectionsFound, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig), mazes[level].numLaddersRange.x, mazes[level].numLaddersRange.y);
                 } else {
                     //FIND MATCH PIECES
                     Debug.Log("Building connection by offset translation");
@@ -44,13 +47,27 @@ namespace narkdagas.mazegenerator {
                     PieceData dstConnection = connectionCandidates.dst[Random.Range(0, connectionCandidates.dst.Count)];
 
                     //BUILD STAIR
-                    BuildConnections(new List<(PieceData src, PieceData dst)> { (srcConnection, dstConnection) }, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig), 1, 1);
+                    BuildStair(ref srcConnection, ref dstConnection, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig));
 
                     //GET OFFSET AND MOVE UPPER LEVEL
                     mazes[level + 1].mazeConfig.xOffset = srcConnection.posX - dstConnection.posX;
                     mazes[level + 1].mazeConfig.zOffset = srcConnection.posZ - dstConnection.posZ;
                     Debug.Log($"Offset level {level + 1} by [{mazes[level + 1].mazeConfig.xOffset}, {mazes[level + 1].mazeConfig.zOffset}]");
                 }
+                
+                Debug.Log($"LADDER PIECE SUMMARY FOR {level}->{level + 1}");
+                foreach (PieceData piece in mazes[level].pieces) {
+                    if (piece.pieceType is PieceType.LadderUp or PieceType.LadderDown) {
+                        Debug.Log($"BINGO UP for level {level}");
+                    }
+                }
+
+                foreach (PieceData piece in mazes[level + 1].pieces) {
+                    if (piece.pieceType is PieceType.LadderDown or PieceType.LadderUp) {
+                        Debug.Log($"BINGO DOWN for level {level + 1}");
+                    }
+                }
+                
             }
 
             float carryXOffset = 0;
@@ -59,19 +76,22 @@ namespace narkdagas.mazegenerator {
             for (int level = 0; level < mazes.Length - 1; level++) {
                 carryXOffset += mazes[level].mazeConfig.xOffset;
                 carryZOffset += mazes[level].mazeConfig.zOffset;
-                
+
                 mazes[level + 1].gameObject.transform.Translate(
                     (mazes[level + 1].mazeConfig.xOffset + carryXOffset) * mazes[level + 1].mazeConfig.pieceScale,
                     0,
                     (mazes[level + 1].mazeConfig.zOffset + carryZOffset) * mazes[level + 1].mazeConfig.pieceScale
-                    );
+                );
             }
         }
 
         IList<(PieceData src, PieceData dst)> GetConnectionPairs(PieceData[,] srcMaze, PieceData[,] dstMaze) {
+            //THESE CAN ONLY EXIST WITHIN THE SMALLEST "COMMON" SECTION OF THE TWO MAZES
+            int innerWidth = Math.Min(srcMaze.GetLength(0), dstMaze.GetLength(0));
+            int innerDepth = Math.Min(srcMaze.GetLength(1), dstMaze.GetLength(1));
             IList<(PieceData src, PieceData dst)> connections = new List<(PieceData src, PieceData dst)>();
-            for (byte z = 0; z < depth; z++) {
-                for (byte x = 0; x < width; x++) {
+            for (byte z = 0; z < innerDepth; z++) {
+                for (byte x = 0; x < innerWidth; x++) {
                     if ((srcMaze[x, z].pieceType == PieceType.DeadEndLeft && dstMaze[x, z].pieceType == PieceType.DeadEndRight) ||
                         (srcMaze[x, z].pieceType == PieceType.DeadEndRight && dstMaze[x, z].pieceType == PieceType.DeadEndLeft) ||
                         (srcMaze[x, z].pieceType == PieceType.DeadEndTop && dstMaze[x, z].pieceType == PieceType.DeadEndBottom) ||
@@ -169,6 +189,48 @@ namespace narkdagas.mazegenerator {
             }
 
             Debug.Log($"{numConnections} Connections Built between levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level}");
+        }
+
+        void BuildStair(ref PieceData srcPiece, ref PieceData dstPiece, (MazeGenerator.MazeConfig src, MazeGenerator.MazeConfig dst) mazeConfigs) {
+            Debug.Log($"Building stair between levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level}");
+            var transformParent = srcPiece.pieceModel.transform.parent;
+            Destroy(srcPiece.pieceModel);
+            Destroy(dstPiece.pieceModel);
+
+            Vector3 srcPos = new Vector3(srcPiece.posX * mazeConfigs.src.pieceScale, mazeConfigs.src.level * mazeConfigs.src.pieceScale * mazeConfigs.src.heightScale,
+                srcPiece.posZ * mazeConfigs.src.pieceScale);
+            srcPiece.pieceType = PieceType.LadderUp;
+            Vector3 dstPos = new Vector3(dstPiece.posX * mazeConfigs.dst.pieceScale, mazeConfigs.dst.level * mazeConfigs.dst.pieceScale * mazeConfigs.src.heightScale,
+                dstPiece.posZ * mazeConfigs.dst.pieceScale);
+            dstPiece.pieceType = PieceType.LadderDown;
+
+            GameObject newSrcPieceModel = null;
+            switch (srcPiece.pieceType) {
+                case PieceType.DeadEndRight:
+                    newSrcPieceModel = Instantiate(deadEndStair, srcPos, Quaternion.identity);
+                    newSrcPieceModel.transform.SetParent(transformParent);
+                    newSrcPieceModel.name = "Stairs_DeadEndRight";
+                    break;
+                case PieceType.DeadEndBottom:
+                    newSrcPieceModel = Instantiate(deadEndStair, srcPos, Quaternion.Euler(0, 90, 0));
+                    newSrcPieceModel.transform.SetParent(transformParent);
+                    newSrcPieceModel.name = "Stairs_DeadEndBottom";
+                    break;
+                case PieceType.DeadEndLeft:
+                    newSrcPieceModel = Instantiate(deadEndStair, srcPos, Quaternion.Euler(0, 180, 0));
+                    newSrcPieceModel.transform.SetParent(transformParent);
+                    newSrcPieceModel.name = "Stairs_DeadEndLeft";
+                    break;
+                case PieceType.DeadEndTop:
+                    newSrcPieceModel = Instantiate(deadEndStair, srcPos, Quaternion.Euler(0, 270, 0));
+                    newSrcPieceModel.transform.SetParent(transformParent);
+                    newSrcPieceModel.name = "Stairs_DeadEndTop";
+                    break;
+            }
+
+            srcPiece.pieceModel = newSrcPieceModel;
+            dstPiece.pieceModel = null;
+            Debug.Log($"Built connection levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level} at {srcPos} -> {dstPos}");
         }
     }
 }
