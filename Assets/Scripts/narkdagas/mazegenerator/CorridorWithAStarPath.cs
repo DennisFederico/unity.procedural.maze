@@ -41,10 +41,6 @@ namespace narkdagas.mazegenerator {
         private PathMarker _lastMarker;
         private bool _done;
 
-        void Awake() {
-            maze = GetComponent<MazeGenerator>();
-        }
-
         (PathMarker start, PathMarker goal) BeginSearch() {
             _done = false;
 
@@ -86,9 +82,9 @@ namespace narkdagas.mazegenerator {
 
             foreach (var direction in maze.directions) {
                 MazeGenerator.CellLocation neighbour = direction + thisNode.mapLocation;
-                if (maze.map[neighbour.x, neighbour.z] == 1) continue;
                 if (neighbour.x <= 0 || neighbour.x >= maze.mazeConfig.width) continue;
                 if (neighbour.z <= 0 || neighbour.z >= maze.mazeConfig.height) continue;
+                if (maze.map[neighbour.x, neighbour.z] == 1) continue;
                 if (_closedMarkers.ContainsMapLocation(neighbour)) continue;
 
                 float g = thisNode.g + Vector2.Distance(thisNode.mapLocation.ToVector(), neighbour.ToVector());
@@ -119,14 +115,16 @@ namespace narkdagas.mazegenerator {
             Debug.Log($"Path with {steps} steps found!");
         }
 
-        public void Build() {
+        public (PathMarker startNode, PathMarker goalNode) Build() {
+            maze = GetComponent<MazeGenerator>();
             _pathEnds = BeginSearch();
             while (!_done) {
                 Search(_lastMarker);
             }
-
             maze.InitializeMap();
             MarkPath();
+
+            return _pathEnds;
         }
     }
 }

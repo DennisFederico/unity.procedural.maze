@@ -43,6 +43,11 @@ namespace narkdagas.mazegenerator {
                     Debug.Log("Building stair by offset translation");
                     var connectionCandidates = GetConnectionCandidates(mazes[level].pieces, mazes[level + 1].pieces);
 
+                    if (connectionCandidates.src.Count == 0 || connectionCandidates.dst.Count == 0) {
+                        Debug.Log("No connection candidate pairs found!");
+                        continue;
+                    }
+                    
                     //SELECT A RANDOM PAIR
                     PieceData srcConnection = connectionCandidates.src[Random.Range(0, connectionCandidates.src.Count)];
                     PieceData dstConnection = connectionCandidates.dst[Random.Range(0, connectionCandidates.dst.Count)];
@@ -70,6 +75,7 @@ namespace narkdagas.mazegenerator {
                     (mazes[level + 1].mazeConfig.zOffset + carryZOffset) * mazes[level + 1].mazeConfig.pieceScale
                 );
             }
+            Debug.Log("Connecting Levels... Done.");
         }
 
         IList<(PieceData src, PieceData dst)> GetConnectionPairs(PieceData[,] srcMaze, PieceData[,] dstMaze) {
@@ -126,7 +132,8 @@ namespace narkdagas.mazegenerator {
                 return (srcResults, dstResults);
             }
 
-            return (null, null);
+            Debug.Log($"NO CONNECTION CANDIDATES FOUND!!!");
+            return (new List<PieceData>(), new List<PieceData>());
         }
 
         void BuildConnections(IList<(PieceData src, PieceData dst)> connections, (MazeGenerator.MazeConfig src, MazeGenerator.MazeConfig dst) mazeConfigs, int min, int max) {
