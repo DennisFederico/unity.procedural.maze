@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace narkdagas.mazegenerator {
-    public class WilsonsMazeGenerator : MazeGenerator {
+    public class WilsonsMaze : Maze {
 
         private List<CellLocation> _availableStartCells = new();
 

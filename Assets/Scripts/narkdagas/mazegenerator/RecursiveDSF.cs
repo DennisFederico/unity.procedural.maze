@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace narkdagas.mazegenerator {
-    public class RecursiveDsf : MazeGenerator {
+    public class RecursiveDsf : Maze {
         public int directionRetries = 3;
 
         protected override void GenerateMap() {

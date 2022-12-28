@@ -2,17 +2,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace narkdagas.mazegenerator {
-    public class PrimsMazeGenerator : MazeGenerator {
+    public class PrimsMaze : Maze {
         protected override void GenerateMap() {
             int x = Random.Range(1, mazeConfig.width - 1);
             int z = Random.Range(1, mazeConfig.height - 1);
             map[x, z] = 0;
 
-            List<CellLocation> walls = new List<CellLocation>();
-            walls.Add(new CellLocation(x + 1, z));
-            walls.Add(new CellLocation(x - 1, z));
-            walls.Add(new CellLocation(x, z + 1));
-            walls.Add(new CellLocation(x, z - 1));
+            List<CellLocation> walls = new List<CellLocation> {
+                new CellLocation(x + 1, z),
+                new CellLocation(x - 1, z),
+                new CellLocation(x, z + 1),
+                new CellLocation(x, z - 1)
+            };
 
             int countLoops = 0;
             while (walls.Count > 0) {

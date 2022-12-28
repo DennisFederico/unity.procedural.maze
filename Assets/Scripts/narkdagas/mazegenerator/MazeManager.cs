@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 namespace narkdagas.mazegenerator {
     public class MazeManager : MonoBehaviour {
-        public MazeGenerator[] mazes;
+        public Maze[] mazes;
 
         public GameObject straightManholeUp;
         public GameObject straightManholeDown;
@@ -20,7 +20,7 @@ namespace narkdagas.mazegenerator {
 
         void GenerateMazes() {
             byte level = 0;
-            foreach (MazeGenerator maze in mazes) {
+            foreach (Maze maze in mazes) {
                 Debug.Log($"Building maze for level: {level}");
                 maze.Build(level++);
             }
@@ -61,7 +61,7 @@ namespace narkdagas.mazegenerator {
             return connections;
         }
 
-        void BuildConnections(IList<(PieceData src, PieceData dst)> connections, (MazeGenerator.MazeConfig src, MazeGenerator.MazeConfig dst) mazeConfigs, int min, int max) {
+        void BuildConnections(IList<(PieceData src, PieceData dst)> connections, (Maze.MazeConfig src, Maze.MazeConfig dst) mazeConfigs, int min, int max) {
             int numConnections = Math.Min(Random.Range(min, max + 1), connections.Count);
             Debug.Log($"Building {numConnections} random connections out of {connections.Count} candidates between levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level}");
             connections.ShuffleCurrent();

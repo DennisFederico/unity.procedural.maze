@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace narkdagas.mazegenerator {
-    public class Crawler : MazeGenerator {
+    public class Crawler : Maze {
         protected override void GenerateMap() {
             var minHeight = mazeConfig.height / 6;
             SingleHorizontalCrawl(Random.Range(minHeight, mazeConfig.height - minHeight));

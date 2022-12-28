@@ -6,19 +6,24 @@ using Random = UnityEngine.Random;
 
 namespace narkdagas.mazegenerator {
     public class DungeonMazeManager : MonoBehaviour {
-        public MazeGenerator[] mazes;
+        public Maze[] mazes;
         public GameObject deadEndStair;
 
         private void Start() {
             Debug.Log("Start MazeManager");
             GenerateMazes();
             ConnectLevels();
+            
+            var teleporters = GetComponents<Teleporter>();
+            foreach (var teleporter in teleporters) {
+                teleporter.Place(mazes[teleporter.startMaze], mazes[teleporter.endMaze]);
+            }
         }
 
         void GenerateMazes() {
             byte level = 0;
             //TODO REBUILD (NEXT?) MAZE UNTIL THERE ARE ENOUGH CONNECTION CANDIDATES - TIMEOUT?? MAX TRIES??
-            foreach (MazeGenerator maze in mazes) {
+            foreach (Maze maze in mazes) {
                 Debug.Log($"Building maze for level: {level}");
                 maze.Build(level++);
             }
@@ -136,58 +141,7 @@ namespace narkdagas.mazegenerator {
             return (new List<PieceData>(), new List<PieceData>());
         }
 
-        void BuildConnections(IList<(PieceData src, PieceData dst)> connections, (MazeGenerator.MazeConfig src, MazeGenerator.MazeConfig dst) mazeConfigs, int min, int max) {
-            int numConnections = Math.Min(Random.Range(min, max + 1), connections.Count);
-            Debug.Log($"Building {numConnections} random connections out of {connections.Count} candidates between levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level}");
-            connections.ShuffleCurrent();
-            for (var i = 0; i < numConnections; i++) {
-                PieceData srcPiece = connections[i].src;
-                PieceData dstPiece = connections[i].dst;
-                var transformParent = srcPiece.pieceModel.transform.parent;
-                Destroy(srcPiece.pieceModel);
-                Destroy(dstPiece.pieceModel);
-
-                Vector3 srcPos = new Vector3(srcPiece.posX * mazeConfigs.src.pieceScale, mazeConfigs.src.level * mazeConfigs.src.pieceScale * mazeConfigs.src.heightScale,
-                    srcPiece.posZ * mazeConfigs.src.pieceScale);
-                
-                Vector3 dstPos = new Vector3(dstPiece.posX * mazeConfigs.dst.pieceScale, mazeConfigs.dst.level * mazeConfigs.dst.pieceScale * mazeConfigs.src.heightScale,
-                    dstPiece.posZ * mazeConfigs.dst.pieceScale);
-
-                GameObject newSrcPieceModel = null;
-                switch (connections[i].src.pieceType) {
-                    case PieceType.DeadEndRight:
-                        newSrcPieceModel = Instantiate(deadEndStair, srcPos, Quaternion.identity);
-                        newSrcPieceModel.transform.SetParent(transformParent);
-                        newSrcPieceModel.name = "Stairs_DeadEndRight";
-                        break;
-                    case PieceType.DeadEndBottom:
-                        newSrcPieceModel = Instantiate(deadEndStair, srcPos, Quaternion.Euler(0, 90, 0));
-                        newSrcPieceModel.transform.SetParent(transformParent);
-                        newSrcPieceModel.name = "Stairs_DeadEndBottom";
-                        break;
-                    case PieceType.DeadEndLeft:
-                        newSrcPieceModel = Instantiate(deadEndStair, srcPos, Quaternion.Euler(0, 180, 0));
-                        newSrcPieceModel.transform.SetParent(transformParent);
-                        newSrcPieceModel.name = "Stairs_DeadEndLeft";
-                        break;
-                    case PieceType.DeadEndTop:
-                        newSrcPieceModel = Instantiate(deadEndStair, srcPos, Quaternion.Euler(0, 270, 0));
-                        newSrcPieceModel.transform.SetParent(transformParent);
-                        newSrcPieceModel.name = "Stairs_DeadEndTop";
-                        break;
-                }
-
-                srcPiece.pieceType = PieceType.LadderUp;
-                srcPiece.pieceModel = newSrcPieceModel;
-                dstPiece.pieceType = PieceType.LadderDown;
-                dstPiece.pieceModel = null;
-                Debug.Log($"Built connection {srcPos} -> {dstPos}");
-            }
-
-            Debug.Log($"{numConnections} Connections Built between levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level}");
-        }
-
-        void BuildStair(PieceData srcPiece, PieceData dstPiece, (MazeGenerator.MazeConfig src, MazeGenerator.MazeConfig dst) mazeConfigs) {
+        void BuildStair(PieceData srcPiece, PieceData dstPiece, (Maze.MazeConfig src, Maze.MazeConfig dst) mazeConfigs) {
             Debug.Log($"Building stair between levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level}");
             var transformParent = srcPiece.pieceModel.transform.parent;
             Destroy(srcPiece.pieceModel);

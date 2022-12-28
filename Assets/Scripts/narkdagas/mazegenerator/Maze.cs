@@ -4,7 +4,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace narkdagas.mazegenerator {
-    public class MazeGenerator : MonoBehaviour {
+    public class Maze : MonoBehaviour {
         // [SerializeField] protected int genSeed = 432912345;
         [SerializeField] protected byte width;
         [SerializeField] protected byte depth;
@@ -16,6 +16,7 @@ namespace narkdagas.mazegenerator {
         [SerializeField] protected GameObject[] doorwayPieces;
         [SerializeField] protected GameObject[] pillarPieces;
         [SerializeField] protected GameObject[] straightPieces;
+        public bool iterateStraightPieces;
         [SerializeField] protected GameObject[] cornerPieces;
         [SerializeField] protected GameObject[] deadEndPieces;
         [SerializeField] protected GameObject[] junctionPieces;
@@ -106,7 +107,7 @@ namespace narkdagas.mazegenerator {
         //          |---|---|---|
         //          | 6 | 5 | 4 |
         //          |---|---|---|
-        protected readonly Vector3[] neighbourRelativeCoords = {
+        private readonly Vector3[] _neighbourRelativeCoords = {
             new(-1, 0, 1),
             new(0, 0, 1),
             new(1, 0, 1),
@@ -186,6 +187,12 @@ namespace narkdagas.mazegenerator {
             }
 
             DrawMap();
+
+            var placeItems = GetComponents<PlaceItems>();
+            foreach (var placeItem in placeItems) {
+                placeItem.PlaceItemsForMaze();
+            }
+
             if (placePlayer) PlacePlayer();
         }
 
@@ -232,9 +239,10 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        public void DrawMap() {
+        private void DrawMap() {
             Debug.Log($"Drawing map level {mazeConfig.level} - [{mazeConfig.width}][{mazeConfig.height}]");
             pieces = new PieceData[mazeConfig.width, mazeConfig.height];
+            int straightPieceCount = 0;
             float height = mazeConfig.level * pieceScale * heightScale;
             Dictionary<Vector3, bool> pillarsLocations = new Dictionary<Vector3, bool>();
             for (byte z = 0; z < mazeConfig.height; z++) {
@@ -246,10 +254,10 @@ namespace narkdagas.mazegenerator {
                         GameObject pieceInstance;
                         switch (pieceType) {
                             case PieceType.CorridorHorizontal:
-                                pieceInstance = Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
+                                pieceInstance = iterateStraightPieces ? Instantiate(straightPieces[straightPieceCount++ % straightPieces.Length], pos, Quaternion.Euler(0, 90, 0)) : Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
                             case PieceType.CorridorVertical:
-                                pieceInstance = Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.identity);
+                                pieceInstance = iterateStraightPieces ? Instantiate(straightPieces[straightPieceCount++ % straightPieces.Length], pos, Quaternion.identity) : Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
                             case PieceType.CornerTopRight:
                                 pieceInstance = Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.identity);
@@ -333,7 +341,7 @@ namespace narkdagas.mazegenerator {
                     wall.name = "Wall";
                     wall.transform.SetParent(transform);
 
-                    Vector3 rightPillarPos = (neighbourRelativeCoords.CircularIndexValue(side + 1) * pieceScale / 2) + posInt;
+                    Vector3 rightPillarPos = (_neighbourRelativeCoords.CircularIndexValue(side + 1) * pieceScale / 2) + posInt;
                     if (neighbours.CircularIndexValue(side + 1) == (int)CellLocationType.Corridor && neighbours.CircularIndexValue(side + 2) == (int)CellLocationType.Corridor &&
                         !pillars.ContainsKey(rightPillarPos)) {
                         GameObject pillar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles));
@@ -343,7 +351,7 @@ namespace narkdagas.mazegenerator {
                         pillars.Add(rightPillarPos, true);
                     }
 
-                    Vector3 leftPillarPos = (neighbourRelativeCoords.CircularIndexValue(side - 1) * pieceScale / 2) + posInt;
+                    Vector3 leftPillarPos = (_neighbourRelativeCoords.CircularIndexValue(side - 1) * pieceScale / 2) + posInt;
                     if (neighbours.CircularIndexValue(side - 2) == (int)CellLocationType.Corridor && neighbours.CircularIndexValue(side - 1) == (int)CellLocationType.Corridor &&
                         !pillars.ContainsKey(leftPillarPos)) {
                         GameObject pillar = Instantiate(pillarPieces.GetRandomPiece(), pos, Quaternion.Euler(wallRotation.eulerAngles + new Vector3(0, -90, 0)));
@@ -382,7 +390,7 @@ namespace narkdagas.mazegenerator {
             return count;
         }
 
-        protected int CountDiagonalNeighboursOfType(int x, int z, byte type = (byte)CellLocationType.Corridor) {
+        private int CountDiagonalNeighboursOfType(int x, int z, byte type = (byte)CellLocationType.Corridor) {
             if (IsOutsideMaze(x, z)) return 5;
 
             int count = 0;
@@ -412,7 +420,7 @@ namespace narkdagas.mazegenerator {
                    z < mazeConfig.height - 1;
         }
 
-        protected bool IsOutsideMaze(int x, int z) {
+        private bool IsOutsideMaze(int x, int z) {
             bool result = x <= 0 ||
                           x >= mazeConfig.width - 1 ||
                           z <= 0 ||
