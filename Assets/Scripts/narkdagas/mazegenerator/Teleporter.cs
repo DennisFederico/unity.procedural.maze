@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 namespace narkdagas.mazegenerator {
+    [RequireComponent(typeof(DungeonMazeManager))]
     public class Teleporter : MonoBehaviour {
         [SerializeField] private GameObject teleportPrefab;
         public int startMaze;

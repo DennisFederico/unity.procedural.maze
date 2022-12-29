@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace narkdagas.mazegenerator {
     public class PathMarker {
-        public readonly Maze.CellLocation mapLocation;
+        public readonly Maze.MapLocation mapLocation;
         public float g;
         public float h;
         public float f;
         public PathMarker parent;
 
-        public PathMarker(Maze.CellLocation mapLocation, float g, float h, float f, PathMarker parent) {
+        public PathMarker(Maze.MapLocation mapLocation, float g, float h, float f, PathMarker parent) {
             this.mapLocation = mapLocation;
             this.g = g;
             this.h = h;
@@ -45,19 +45,19 @@ namespace narkdagas.mazegenerator {
             _done = false;
 
             // NOT WALLS
-            List<Maze.CellLocation> notWalls = new List<Maze.CellLocation>();
+            List<Maze.MapLocation> notWalls = new List<Maze.MapLocation>();
             for (int x = 1; x < maze.mazeConfig.width - 1; x++) {
                 for (int z = 1; z < maze.mazeConfig.height - 1; z++) {
                     if (maze.map[x, z] != 1) {
-                        notWalls.Add(new Maze.CellLocation(x, z));
+                        notWalls.Add(new Maze.MapLocation(x, z));
                     }
                 }
             }
 
             notWalls.ShuffleCurrent();
 
-            var startLocation = new Maze.CellLocation(notWalls[0].x, notWalls[0].z);
-            var goalLocation = new Maze.CellLocation(notWalls[1].x, notWalls[1].z);
+            var startLocation = new Maze.MapLocation(notWalls[0].x, notWalls[0].z);
+            var goalLocation = new Maze.MapLocation(notWalls[1].x, notWalls[1].z);
 
             float g = 0;
             float h = Vector2.Distance(startLocation.ToVector(), goalLocation.ToVector());
@@ -81,7 +81,7 @@ namespace narkdagas.mazegenerator {
             }
 
             foreach (var direction in maze.directions) {
-                Maze.CellLocation neighbour = direction + thisNode.mapLocation;
+                Maze.MapLocation neighbour = direction + thisNode.mapLocation;
                 if (neighbour.x <= 0 || neighbour.x >= maze.mazeConfig.width) continue;
                 if (neighbour.z <= 0 || neighbour.z >= maze.mazeConfig.height) continue;
                 if (maze.map[neighbour.x, neighbour.z] == 1) continue;

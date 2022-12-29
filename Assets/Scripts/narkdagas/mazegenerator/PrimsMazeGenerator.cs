@@ -8,11 +8,11 @@ namespace narkdagas.mazegenerator {
             int z = Random.Range(1, mazeConfig.height - 1);
             map[x, z] = 0;
 
-            List<CellLocation> walls = new List<CellLocation> {
-                new CellLocation(x + 1, z),
-                new CellLocation(x - 1, z),
-                new CellLocation(x, z + 1),
-                new CellLocation(x, z - 1)
+            List<MapLocation> walls = new List<MapLocation> {
+                new MapLocation(x + 1, z),
+                new MapLocation(x - 1, z),
+                new MapLocation(x, z + 1),
+                new MapLocation(x, z - 1)
             };
 
             int countLoops = 0;
@@ -25,10 +25,10 @@ namespace narkdagas.mazegenerator {
 
                 if (CountCrossNeighboursOfType(x, z) == 1) {
                     map[x, z] = 0;
-                    walls.Add(new CellLocation(x + 1, z));
-                    walls.Add(new CellLocation(x - 1, z));
-                    walls.Add(new CellLocation(x, z + 1));
-                    walls.Add(new CellLocation(x, z - 1));
+                    walls.Add(new MapLocation(x + 1, z));
+                    walls.Add(new MapLocation(x - 1, z));
+                    walls.Add(new MapLocation(x, z + 1));
+                    walls.Add(new MapLocation(x, z - 1));
                 }
 
                 countLoops++;

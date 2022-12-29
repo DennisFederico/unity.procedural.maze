@@ -28,14 +28,12 @@ namespace narkdagas.mazegenerator {
     }
 
     public class PieceData {
-        public readonly byte posX;
-        public readonly byte posZ;
+        public Maze.MapLocation pieceLocation;
         public PieceType pieceType;
         public GameObject pieceModel;
 
-        public PieceData(byte x, byte z, PieceType type, GameObject model) {
-            posX = x;
-            posZ = z;
+        public PieceData(Maze.MapLocation location, PieceType type, GameObject model) {
+            this.pieceLocation = location;
             pieceType = type;
             pieceModel = model;
         }
@@ -54,173 +52,173 @@ namespace narkdagas.mazegenerator {
         public static PieceType MatchMazePiece(this byte[] neighbours) {
 
             if (neighbours.SequenceEqual(new [] {
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.OpenRoom;
             
             if (neighbours.SequenceEqual(new [] {
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.Intersection;
             
             // T-Junctions
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.JunctionTop;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Wall
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Wall
                 })) return PieceType.JunctionRight;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.JunctionBottom;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.JunctionLeft;
             
             //CORNERS
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Wall
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Wall
                 })) return PieceType.CornerTopRight;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.CornerTopLeft;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor, 
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Wall
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor, 
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Wall
                 })) return PieceType.CornerBottomRight;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Any, 
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Wall, 
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Any, 
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Wall, 
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.CornerBottomLeft;
 
             //Corridors
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.CorridorHorizontal;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall
                 })) return PieceType.CorridorVertical;
             
             //Dead Ends
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall
                 })) return PieceType.DeadEndTop;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall
                 })) return PieceType.DeadEndRight;
             if (neighbours.MatchPattern(new [] {
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall
                 })) return PieceType.DeadEndBottom;
             if (neighbours.MatchPattern( new [] {
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Wall,
-                    (byte) Maze.CellLocationType.Any,
-                    (byte) Maze.CellLocationType.Corridor
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Wall,
+                    (byte) Maze.MapLocationType.Any,
+                    (byte) Maze.MapLocationType.Corridor
                 })) return PieceType.DeadEndLeft;
             
             
@@ -279,7 +277,7 @@ namespace narkdagas.mazegenerator {
         private static bool MatchPattern(this byte[] compare, byte[] pattern) {
             if (compare.Length != pattern.Length) return false;
             for (int i = 0; i < compare.Length; i++) {
-                if (pattern[i] != (int)Maze.CellLocationType.Any && compare[i] != pattern[i]) {
+                if (pattern[i] != (int)Maze.MapLocationType.Any && compare[i] != pattern[i]) {
                     return false;
                 }
             }

@@ -8,16 +8,15 @@ namespace narkdagas.mazegenerator {
     public class DungeonMazeManager : MonoBehaviour {
         public Maze[] mazes;
         public GameObject deadEndStair;
+        [SerializeField] protected GameObject playerPrefab;
 
         private void Start() {
             Debug.Log("Start MazeManager");
             GenerateMazes();
             ConnectLevels();
-            
-            var teleporters = GetComponents<Teleporter>();
-            foreach (var teleporter in teleporters) {
-                teleporter.Place(mazes[teleporter.startMaze], mazes[teleporter.endMaze]);
-            }
+            PlaceTeleporters();
+            var startLocation = PlacePlayer(mazes[0]);
+            mazes[0].startLocations.Add(startLocation);
         }
 
         void GenerateMazes() {
@@ -39,10 +38,12 @@ namespace narkdagas.mazegenerator {
                     Debug.Log($"Building {numStairs} random stairs out of {connectionsFound.Count} candidates between levels {level} -> {level + 1}");
                     connectionsFound.ShuffleCurrent();
                     for (var i = 0; i < numStairs; i++) {
-                        var valueTuple = connectionsFound[i];
-                        BuildStair(valueTuple.src, valueTuple.dst, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig));
+                        var stairLocation = connectionsFound[i];
+                        BuildStair(stairLocation.src, stairLocation.dst, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig));
+                        //ADD EXIT TO THE SOURCE MAZE
+                        mazes[level].exitLocations.Add(stairLocation.src.pieceLocation);
+                        mazes[level+1].startLocations.Add(stairLocation.dst.pieceLocation);
                     }
-                    //BuildConnections(connectionsFound, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig), mazes[level].numLaddersRange.x, mazes[level].numLaddersRange.y);
                 } else {
                     //FIND MATCH PIECES
                     Debug.Log("Building stair by offset translation");
@@ -59,10 +60,12 @@ namespace narkdagas.mazegenerator {
 
                     //BUILD STAIR
                     BuildStair(srcConnection, dstConnection, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig));
+                    mazes[level].exitLocations.Add(srcConnection.pieceLocation);
+                    mazes[level+1].startLocations.Add(dstConnection.pieceLocation);
 
-                    //GET OFFSET AND MOVE UPPER LEVEL
-                    mazes[level + 1].mazeConfig.xOffset = srcConnection.posX - dstConnection.posX;
-                    mazes[level + 1].mazeConfig.zOffset = srcConnection.posZ - dstConnection.posZ;
+                    //GET OFFSET TO MOVE UPPER LEVEL
+                    mazes[level + 1].mazeConfig.xOffset = srcConnection.pieceLocation.x - dstConnection.pieceLocation.x;
+                    mazes[level + 1].mazeConfig.zOffset = srcConnection.pieceLocation.z - dstConnection.pieceLocation.z;
                     Debug.Log($"Offset level {level + 1} by [{mazes[level + 1].mazeConfig.xOffset}, {mazes[level + 1].mazeConfig.zOffset}]");
                 }
             }
@@ -147,10 +150,10 @@ namespace narkdagas.mazegenerator {
             Destroy(srcPiece.pieceModel);
             Destroy(dstPiece.pieceModel);
 
-            Vector3 srcPos = new Vector3(srcPiece.posX * mazeConfigs.src.pieceScale, mazeConfigs.src.level * mazeConfigs.src.pieceScale * mazeConfigs.src.heightScale,
-                srcPiece.posZ * mazeConfigs.src.pieceScale);
-            Vector3 dstPos = new Vector3(dstPiece.posX * mazeConfigs.dst.pieceScale, mazeConfigs.dst.level * mazeConfigs.dst.pieceScale * mazeConfigs.src.heightScale,
-                dstPiece.posZ * mazeConfigs.dst.pieceScale);
+            Vector3 srcPos = new Vector3(srcPiece.pieceLocation.x * mazeConfigs.src.pieceScale, mazeConfigs.src.level * mazeConfigs.src.pieceScale * mazeConfigs.src.heightScale,
+                srcPiece.pieceLocation.z * mazeConfigs.src.pieceScale);
+            Vector3 dstPos = new Vector3(dstPiece.pieceLocation.x * mazeConfigs.dst.pieceScale, mazeConfigs.dst.level * mazeConfigs.dst.pieceScale * mazeConfigs.src.heightScale,
+                dstPiece.pieceLocation.z * mazeConfigs.dst.pieceScale);
 
             GameObject newSrcPieceModel = null;
             switch (srcPiece.pieceType) {
@@ -178,9 +181,33 @@ namespace narkdagas.mazegenerator {
 
             srcPiece.pieceType = PieceType.LadderUp;
             srcPiece.pieceModel = newSrcPieceModel;
+            if (srcPiece.pieceModel) {
+                srcPiece.pieceModel.AddComponent<PieceLocation>().location = srcPiece.pieceLocation;
+            }
+
             dstPiece.pieceType = PieceType.LadderDown;
             dstPiece.pieceModel = null;
             Debug.Log($"Built connection levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level} at {srcPos} -> {dstPos}");
         }
+
+        void PlaceTeleporters() {
+            var teleporters = GetComponents<Teleporter>();
+            foreach (var teleporter in teleporters) {
+                teleporter.Place(mazes[teleporter.startMaze], mazes[teleporter.endMaze]);
+            }
+        }
+
+        Maze.MapLocation PlacePlayer(Maze maze) {
+            for (int x = 1; x < maze.mazeConfig.width - 1; x++) {
+                for (int z = 1; z < maze.mazeConfig.height - 1; z++) {
+                    if (maze.map[x, z] == (int)Maze.MapLocationType.Corridor) {
+                        Instantiate(playerPrefab, new Vector3(x * 6, 0, z * 6), Quaternion.identity);
+                        return new Maze.MapLocation(x, z);
+                    }
+                }
+            }
+            return new Maze.MapLocation(0, 0);
+        }
+        
     }
 }

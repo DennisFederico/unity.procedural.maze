@@ -4,13 +4,13 @@ using UnityEngine;
 namespace narkdagas.mazegenerator {
     public class WilsonsMaze : Maze {
 
-        private List<CellLocation> _availableStartCells = new();
+        private List<MapLocation> _availableStartCells = new();
 
         protected override void GenerateMap() {
             // Starting Cell
             int x = Random.Range(1, mazeConfig.width - 1);
             int z = Random.Range(1, mazeConfig.height - 1);
-            map[x, z] = (byte)CellLocationType.Maze;
+            map[x, z] = (byte)MapLocationType.Maze;
 
             int tries = 0;
             while (GetAvailableCells() > 1 && tries < 5000) {
@@ -25,10 +25,10 @@ namespace narkdagas.mazegenerator {
             _availableStartCells.Clear();
             for (int z = 1; z < mazeConfig.height - 1; z++) {
                 for (int x = 1; x < mazeConfig.width - 1; x++) {
-                    if (map[x, z] == (int)CellLocationType.Wall &&
+                    if (map[x, z] == (int)MapLocationType.Wall &&
                         CountCrossNeighboursOfType(x, z) == 0 &&
-                        CountCrossNeighboursOfType(x, z, (byte) CellLocationType.Maze) == 0) {
-                        _availableStartCells.Add(new CellLocation(x, z));
+                        CountCrossNeighboursOfType(x, z, (byte) MapLocationType.Maze) == 0) {
+                        _availableStartCells.Add(new MapLocation(x, z));
                     }
                 }
             }
@@ -42,15 +42,15 @@ namespace narkdagas.mazegenerator {
             int x = _availableStartCells[startPosition].x;
             int z = _availableStartCells[startPosition].z;
 
-            List<CellLocation> inWalk = new();
+            List<MapLocation> inWalk = new();
             bool isValidPath = false;
             int retry = 0;
 
             while (IsInsideMaze(x, z) && retry < 10) {
 
                 if (retry == 0) {
-                    map[x, z] = (byte)CellLocationType.Corridor;
-                    inWalk.Add(new CellLocation(x, z));
+                    map[x, z] = (byte)MapLocationType.Corridor;
+                    inWalk.Add(new MapLocation(x, z));
                 }
 
                 int randomDirection = Random.Range(0, directions.Count);
@@ -75,14 +75,14 @@ namespace narkdagas.mazegenerator {
             }
 
             if (isValidPath) {
-                inWalk.Add(new CellLocation(x, z));
+                inWalk.Add(new MapLocation(x, z));
                 Debug.Log("Found Path");
-                foreach (CellLocation cellInfo in inWalk) {
+                foreach (MapLocation cellInfo in inWalk) {
                     map[cellInfo.x, cellInfo.z] = 2;
                 }
             } else {
-                foreach (CellLocation cellInfo in inWalk) {
-                    map[cellInfo.x, cellInfo.z] = (byte) CellLocationType.Wall;
+                foreach (MapLocation cellInfo in inWalk) {
+                    map[cellInfo.x, cellInfo.z] = (byte) MapLocationType.Wall;
                 }
             }
 

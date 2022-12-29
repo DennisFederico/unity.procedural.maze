@@ -156,8 +156,6 @@ MonoBehaviour:
   depth: 30
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -183,7 +181,6 @@ MonoBehaviour:
   numRooms: 2
   roomSizeRange: {x: 3, y: 6}
   numLaddersRange: {x: 2, y: 3}
-  placePlayer: 0
   mazeConfig:
     width: 0
     height: 0
@@ -191,7 +188,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -359,8 +355,6 @@ MonoBehaviour:
   depth: 20
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -386,7 +380,6 @@ MonoBehaviour:
   numRooms: 1
   roomSizeRange: {x: 3, y: 6}
   numLaddersRange: {x: 2, y: 3}
-  placePlayer: 0
   mazeConfig:
     width: 0
     height: 0
@@ -394,7 +387,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -460,8 +452,6 @@ MonoBehaviour:
   depth: 15
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -486,7 +476,6 @@ MonoBehaviour:
   numRooms: 1
   roomSizeRange: {x: 3, y: 6}
   numLaddersRange: {x: 2, y: 3}
-  placePlayer: 0
   mazeConfig:
     width: 0
     height: 0
@@ -494,7 +483,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -560,8 +548,6 @@ MonoBehaviour:
   depth: 25
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -586,7 +572,6 @@ MonoBehaviour:
   numRooms: 1
   roomSizeRange: {x: 4, y: 6}
   numLaddersRange: {x: 2, y: 3}
-  placePlayer: 0
   mazeConfig:
     width: 0
     height: 0
@@ -594,7 +579,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -688,6 +672,8 @@ MonoBehaviour:
   - {fileID: 807102343}
   - {fileID: 821979675}
   deadEndStair: {fileID: 307388870783284033, guid: 613202f2f8fd844ad91bb024bd85f75c,
+    type: 3}
+  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
     type: 3}
 --- !u!114 &1004023386
 MonoBehaviour:
@@ -873,8 +859,6 @@ MonoBehaviour:
   depth: 25
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -899,7 +883,6 @@ MonoBehaviour:
   numRooms: 2
   roomSizeRange: {x: 3, y: 6}
   numLaddersRange: {x: 2, y: 3}
-  placePlayer: 0
   mazeConfig:
     width: 0
     height: 0
@@ -907,7 +890,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -959,8 +941,6 @@ MonoBehaviour:
   depth: 40
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -986,7 +966,6 @@ MonoBehaviour:
   numRooms: 3
   roomSizeRange: {x: 4, y: 6}
   numLaddersRange: {x: 2, y: 3}
-  placePlayer: 1
   mazeConfig:
     width: 0
     height: 0
@@ -994,7 +973,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4

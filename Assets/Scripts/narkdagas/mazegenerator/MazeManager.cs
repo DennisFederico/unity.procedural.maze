@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 namespace narkdagas.mazegenerator {
     public class MazeManager : MonoBehaviour {
         public Maze[] mazes;
-
+        [SerializeField] protected GameObject playerPrefab;
         public GameObject straightManholeUp;
         public GameObject straightManholeDown;
         public GameObject deadEndManholeUp;
@@ -71,13 +71,13 @@ namespace narkdagas.mazegenerator {
                 Destroy(srcPiece.pieceModel);
                 Destroy(dstPiece.pieceModel);
 
-                Vector3 srcPos = new Vector3(srcPiece.posX * mazeConfigs.src.pieceScale, 
+                Vector3 srcPos = new Vector3(srcPiece.pieceLocation.x * mazeConfigs.src.pieceScale, 
                     mazeConfigs.src.level * mazeConfigs.src.pieceScale * mazeConfigs.src.heightScale, 
-                    srcPiece.posZ * mazeConfigs.src.pieceScale);
+                    srcPiece.pieceLocation.z * mazeConfigs.src.pieceScale);
                 srcPiece.pieceType = PieceType.LadderUp;
-                Vector3 dstPos = new Vector3(dstPiece.posX * mazeConfigs.dst.pieceScale, 
+                Vector3 dstPos = new Vector3(dstPiece.pieceLocation.x * mazeConfigs.dst.pieceScale, 
                     mazeConfigs.dst.level * mazeConfigs.dst.pieceScale * mazeConfigs.src.heightScale, 
-                    dstPiece.posZ * mazeConfigs.dst.pieceScale);
+                    dstPiece.pieceLocation.z * mazeConfigs.dst.pieceScale);
                 dstPiece.pieceType = PieceType.LadderDown;
 
                 GameObject newSrcPieceModel = null;
@@ -115,6 +115,17 @@ namespace narkdagas.mazegenerator {
             }
 
             Debug.Log($"{numConnections} Connections Built between levels {mazeConfigs.src.level} -> {mazeConfigs.dst.level}");
+        }
+        
+        private void PlacePlayer(Maze maze) {
+            for (int x = 1; x < maze.mazeConfig.width - 1; x++) {
+                for (int z = 1; z < maze.mazeConfig.height - 1; z++) {
+                    if (maze.map[x, z] == (int)Maze.MapLocationType.Corridor) {
+                        Instantiate(playerPrefab, new Vector3(x * 6, 0, z * 6), Quaternion.identity);
+                        return;
+                    }
+                }
+            }
         }
     }
 }

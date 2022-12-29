@@ -25,7 +25,13 @@ namespace narkdagas.mazegenerator {
             return pieces[Random.Range(0, pieces.Length)];
         }
 
-        public static bool ContainsMapLocation(this IList<PathMarker> markers, Maze.CellLocation location) {
+        public static T GetRandom<T>(this IList<T> list) {
+            if (list == null || list.Count == 0) return default;
+            if (list.Count == 1) return list[0];
+            return list[Random.Range(0, list.Count)];
+        }
+        
+        public static bool ContainsMapLocation(this IList<PathMarker> markers, Maze.MapLocation location) {
             foreach (var pathMarker in markers) {
                 if (pathMarker.mapLocation.Equals(location)) return true;
             }
@@ -33,7 +39,7 @@ namespace narkdagas.mazegenerator {
             return false;
         }
 
-        public static void UpdateOrAdd(this IList<PathMarker> markers, Maze.CellLocation location, float g, float h, float f, PathMarker parent) {
+        public static void UpdateOrAdd(this IList<PathMarker> markers, Maze.MapLocation location, float g, float h, float f, PathMarker parent) {
             if (markers.Count() >= 0) {
                 foreach (var pathMarker in markers) {
                     if (pathMarker.mapLocation.Equals(location)) {
