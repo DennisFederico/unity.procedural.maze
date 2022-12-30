@@ -1985,7 +1985,7 @@ GameObject:
   - component: {fileID: 5164915717959626465}
   - component: {fileID: 6938217657166486059}
   - component: {fileID: 3461042375509704736}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Straight
   m_TagString: Untagged
   m_Icon: {fileID: 0}

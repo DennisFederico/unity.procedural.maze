@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 177595010}
   - component: {fileID: 177595009}
+  - component: {fileID: 177595011}
   m_Layer: 0
   m_Name: MazeGenerator (3)
   m_TagString: Untagged
@@ -152,11 +153,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  genSeed: 432912345
+  width: 20
+  depth: 20
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -168,6 +168,9 @@ MonoBehaviour:
   - {fileID: 137215637984917996, guid: d7dc7e3cc537d41bfb0fe75e9c36074f, type: 3}
   straightPieces:
   - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
+  - {fileID: 5266174188830831679, guid: 42eab8bddb9e54fd8beb3917b05d238a, type: 3}
+  - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
+  iterateStraightPieces: 0
   cornerPieces:
   - {fileID: 6768541817485999683, guid: 0ab180f43180d4cdca2975e513d5e736, type: 3}
   deadEndPieces:
@@ -176,10 +179,9 @@ MonoBehaviour:
   - {fileID: 2678590283380203684, guid: 16c0f580db60945299b42d0c52d9d5e8, type: 3}
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
-  numRooms: 1
+  numRooms: 0
   roomSizeRange: {x: 3, y: 6}
-  numLaddersRange: {x: 1, y: 3}
-  placePlayer: 0
+  numLaddersRange: {x: 2, y: 3}
   mazeConfig:
     width: 0
     height: 0
@@ -187,7 +189,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -206,6 +207,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &177595011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 177595008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f5841d36cc414210af9e449a830f3f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maze: {fileID: 0}
 --- !u!1 &203844586
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,6 +345,7 @@ GameObject:
   m_Component:
   - component: {fileID: 359683828}
   - component: {fileID: 359683827}
+  - component: {fileID: 359683829}
   m_Layer: 0
   m_Name: MazeGenerator (1)
   m_TagString: Untagged
@@ -350,11 +365,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  genSeed: 432912345
+  width: 20
+  depth: 20
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -366,6 +380,9 @@ MonoBehaviour:
   - {fileID: 137215637984917996, guid: d7dc7e3cc537d41bfb0fe75e9c36074f, type: 3}
   straightPieces:
   - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
+  - {fileID: 5266174188830831679, guid: 42eab8bddb9e54fd8beb3917b05d238a, type: 3}
+  - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
+  iterateStraightPieces: 0
   cornerPieces:
   - {fileID: 6768541817485999683, guid: 0ab180f43180d4cdca2975e513d5e736, type: 3}
   deadEndPieces:
@@ -374,10 +391,9 @@ MonoBehaviour:
   - {fileID: 2678590283380203684, guid: 16c0f580db60945299b42d0c52d9d5e8, type: 3}
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
-  numRooms: 1
+  numRooms: 0
   roomSizeRange: {x: 3, y: 6}
-  numLaddersRange: {x: 1, y: 3}
-  placePlayer: 0
+  numLaddersRange: {x: 2, y: 3}
   mazeConfig:
     width: 0
     height: 0
@@ -385,7 +401,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -404,6 +419,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &359683829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 359683826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f5841d36cc414210af9e449a830f3f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maze: {fileID: 0}
 --- !u!1 &807102342
 GameObject:
   m_ObjectHideFlags: 0
@@ -433,11 +461,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  genSeed: 432912345
+  width: 20
+  depth: 20
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -449,6 +476,8 @@ MonoBehaviour:
   - {fileID: 137215637984917996, guid: d7dc7e3cc537d41bfb0fe75e9c36074f, type: 3}
   straightPieces:
   - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
+  - {fileID: 5266174188830831679, guid: 42eab8bddb9e54fd8beb3917b05d238a, type: 3}
+  iterateStraightPieces: 0
   cornerPieces:
   - {fileID: 6768541817485999683, guid: 0ab180f43180d4cdca2975e513d5e736, type: 3}
   deadEndPieces:
@@ -458,9 +487,8 @@ MonoBehaviour:
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
   numRooms: 1
-  roomSizeRange: {x: 3, y: 6}
-  numLaddersRange: {x: 1, y: 3}
-  placePlayer: 0
+  roomSizeRange: {x: 6, y: 6}
+  numLaddersRange: {x: 2, y: 3}
   mazeConfig:
     width: 0
     height: 0
@@ -468,7 +496,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -497,6 +524,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1004023384}
   - component: {fileID: 1004023385}
+  - component: {fileID: 1004023391}
+  - component: {fileID: 1004023390}
+  - component: {fileID: 1004023389}
   m_Layer: 0
   m_Name: MazeManager
   m_TagString: Untagged
@@ -537,10 +567,61 @@ MonoBehaviour:
   - {fileID: 1547500554}
   - {fileID: 177595009}
   - {fileID: 807102343}
-  width: 20
-  depth: 20
   deadEndStair: {fileID: 307388870783284033, guid: 613202f2f8fd844ad91bb024bd85f75c,
     type: 3}
+  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
+    type: 3}
+--- !u!114 &1004023389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004023382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 605a0b73b99554df09ba1d171c11a5b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teleportPrefab: {fileID: 8578169865332986168, guid: ed9d5c163d29144f79ee89e5e8b0dd89,
+    type: 3}
+  startMaze: 2
+  endMaze: 4
+  validPlacing: 070000000a0000000900000008000000
+--- !u!114 &1004023390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004023382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 605a0b73b99554df09ba1d171c11a5b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teleportPrefab: {fileID: 8578169865332986168, guid: ed9d5c163d29144f79ee89e5e8b0dd89,
+    type: 3}
+  startMaze: 0
+  endMaze: 2
+  validPlacing: 070000000a0000000900000008000000
+--- !u!114 &1004023391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004023382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 605a0b73b99554df09ba1d171c11a5b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teleportPrefab: {fileID: 8578169865332986168, guid: ed9d5c163d29144f79ee89e5e8b0dd89,
+    type: 3}
+  startMaze: 0
+  endMaze: 0
+  validPlacing: 070000000a0000000900000008000000
 --- !u!1 &1160234425
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,11 +700,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  genSeed: 432912345
+  width: 25
+  depth: 25
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -635,6 +715,8 @@ MonoBehaviour:
   - {fileID: 137215637984917996, guid: d7dc7e3cc537d41bfb0fe75e9c36074f, type: 3}
   straightPieces:
   - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
+  - {fileID: 5266174188830831679, guid: 42eab8bddb9e54fd8beb3917b05d238a, type: 3}
+  iterateStraightPieces: 0
   cornerPieces:
   - {fileID: 6768541817485999683, guid: 0ab180f43180d4cdca2975e513d5e736, type: 3}
   deadEndPieces:
@@ -643,10 +725,9 @@ MonoBehaviour:
   - {fileID: 2678590283380203684, guid: 16c0f580db60945299b42d0c52d9d5e8, type: 3}
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
-  numRooms: 1
+  numRooms: 2
   roomSizeRange: {x: 3, y: 6}
-  numLaddersRange: {x: 1, y: 3}
-  placePlayer: 0
+  numLaddersRange: {x: 2, y: 3}
   mazeConfig:
     width: 0
     height: 0
@@ -654,7 +735,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4
@@ -702,11 +782,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa5796c8c3a6848a0910ce690c2ec2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  genSeed: 432912345
+  width: 30
+  depth: 30
   pieceScale: 6
   heightScale: 1.5
-  playerPrefab: {fileID: 4607536592162570171, guid: 7f3c3dceeffb94f85bc6150d13ac6a09,
-    type: 3}
   flooredCeiling: {fileID: 6682982695354116777, guid: 761e9d33727394a8ca03ad5d8ecaa321,
     type: 3}
   wallPieces:
@@ -718,6 +797,9 @@ MonoBehaviour:
   - {fileID: 137215637984917996, guid: d7dc7e3cc537d41bfb0fe75e9c36074f, type: 3}
   straightPieces:
   - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
+  - {fileID: 5266174188830831679, guid: 42eab8bddb9e54fd8beb3917b05d238a, type: 3}
+  - {fileID: 8883768366556249086, guid: 0d0cf00ede4344f3784eabdd42504ba2, type: 3}
+  iterateStraightPieces: 0
   cornerPieces:
   - {fileID: 6768541817485999683, guid: 0ab180f43180d4cdca2975e513d5e736, type: 3}
   deadEndPieces:
@@ -726,10 +808,9 @@ MonoBehaviour:
   - {fileID: 2678590283380203684, guid: 16c0f580db60945299b42d0c52d9d5e8, type: 3}
   intersectionPieces:
   - {fileID: 8844717821036454946, guid: ea5dd5fc88c324242b497865f77ba323, type: 3}
-  numRooms: 1
-  roomSizeRange: {x: 3, y: 6}
-  numLaddersRange: {x: 1, y: 3}
-  placePlayer: 1
+  numRooms: 3
+  roomSizeRange: {x: 4, y: 6}
+  numLaddersRange: {x: 2, y: 3}
   mazeConfig:
     width: 0
     height: 0
@@ -737,7 +818,6 @@ MonoBehaviour:
     pieceScale: 0
     heightScale: 0
     numRooms: 0
-    placePlayer: 0
     xOffset: 0
     zOffset: 0
   directionRetries: 4

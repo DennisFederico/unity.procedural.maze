@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ladder
+  - Teleport
   layers:
   - Default
   - TransparentFX
@@ -12,8 +13,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - MapIcons
+  - MapCorridors
   - 
   - 
   - 

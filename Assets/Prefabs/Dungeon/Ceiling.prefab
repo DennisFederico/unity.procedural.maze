@@ -600,7 +600,7 @@ GameObject:
   - component: {fileID: 6943057916502310838}
   - component: {fileID: 5169645470200728444}
   - component: {fileID: 3806640986113728943}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ceiling
   m_TagString: Untagged
   m_Icon: {fileID: 0}

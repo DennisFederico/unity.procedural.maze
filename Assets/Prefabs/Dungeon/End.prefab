@@ -1491,7 +1491,7 @@ GameObject:
   - component: {fileID: 2604515254505087573}
   - component: {fileID: 491149568080930503}
   - component: {fileID: 2117685462936342598}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2105,7 +2105,7 @@ GameObject:
   - component: {fileID: 4431793361925771326}
   - component: {fileID: 7291539429763363437}
   - component: {fileID: 1356225210797367584}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Suzanne
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -8,6 +8,7 @@ namespace narkdagas.mazegenerator {
     public class DungeonMazeManager : MonoBehaviour {
         public Maze[] mazes;
         public GameObject deadEndStair;
+        public MinimapCamera minimapCamera;
         [SerializeField] protected GameObject playerPrefab;
 
         private void Start() {
@@ -15,8 +16,11 @@ namespace narkdagas.mazegenerator {
             GenerateMazes();
             ConnectLevels();
             PlaceTeleporters();
-            var startLocation = PlacePlayer(mazes[0]);
-            mazes[0].startLocations.Add(startLocation);
+            //GenerateMap();
+            var player = PlacePlayer(mazes[0]);
+            
+            //mazes[0].startLocations.Add(startLocation);
+            minimapCamera.Initialize(player.transform);
         }
 
         void GenerateMazes() {
@@ -197,16 +201,23 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        Maze.MapLocation PlacePlayer(Maze maze) {
+        void GenerateMap() {
+            var mapGenerator = GetComponent<MapGenerator>();
+            if (mapGenerator) mapGenerator.GenerateMap(mazes[0]);
+        }
+
+        GameObject PlacePlayer(Maze maze) {
             for (int x = 1; x < maze.mazeConfig.width - 1; x++) {
                 for (int z = 1; z < maze.mazeConfig.height - 1; z++) {
                     if (maze.map[x, z] == (int)Maze.MapLocationType.Corridor) {
-                        Instantiate(playerPrefab, new Vector3(x * 6, 0, z * 6), Quaternion.identity);
-                        return new Maze.MapLocation(x, z);
+                        return Instantiate(playerPrefab, new Vector3(x * maze.mazeConfig.pieceScale, 0, z * maze.mazeConfig.pieceScale), Quaternion.identity);
+                        //return new Maze.MapLocation(x, z);
                     }
                 }
             }
-            return new Maze.MapLocation(0, 0);
+
+            return null;
+            //return new Maze.MapLocation(0, 0);
         }
         
     }

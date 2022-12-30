@@ -998,7 +998,7 @@ GameObject:
   - component: {fileID: 8498642949639823648}
   - component: {fileID: 5914855743151412714}
   - component: {fileID: 167862934690385889}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: StraightWithLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
