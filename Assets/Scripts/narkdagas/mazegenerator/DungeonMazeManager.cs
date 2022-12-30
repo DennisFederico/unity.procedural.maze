@@ -2,25 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace narkdagas.mazegenerator {
-    public class DungeonMazeManager : MonoBehaviour {
+    public class DungeonMazeManager : Singleton<DungeonMazeManager> {
         public Maze[] mazes;
+        public GameObject grimoirePrefab;
         public GameObject deadEndStair;
+        public GameObject playerPrefab;
         public MinimapCamera minimapCamera;
-        [SerializeField] protected GameObject playerPrefab;
+        public RawImage minimapCameraDisplay;
+        private RenderTexture _minimapCameraTexture;
+        private GameObject _playerInstance;
 
-        private void Start() {
+        public void Init() {
             Debug.Log("Start MazeManager");
             GenerateMazes();
             ConnectLevels();
             PlaceTeleporters();
-            //GenerateMap();
-            var player = PlacePlayer(mazes[0]);
-            
-            //mazes[0].startLocations.Add(startLocation);
-            minimapCamera.Initialize(player.transform);
+            GenerateMinimaps();
+            PlaceGrimoire();
+
+            var playerPlacement = PlacePlayer(mazes[0]);
+            _playerInstance = playerPlacement.player;
+            mazes[0].startLocations.Add(playerPlacement.location);
+
+            StartMinimapRender(playerPlacement.player.transform);
         }
 
         void GenerateMazes() {
@@ -46,7 +54,7 @@ namespace narkdagas.mazegenerator {
                         BuildStair(stairLocation.src, stairLocation.dst, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig));
                         //ADD EXIT TO THE SOURCE MAZE
                         mazes[level].exitLocations.Add(stairLocation.src.pieceLocation);
-                        mazes[level+1].startLocations.Add(stairLocation.dst.pieceLocation);
+                        mazes[level + 1].startLocations.Add(stairLocation.dst.pieceLocation);
                     }
                 } else {
                     //FIND MATCH PIECES
@@ -57,7 +65,7 @@ namespace narkdagas.mazegenerator {
                         Debug.Log("No connection candidate pairs found!");
                         continue;
                     }
-                    
+
                     //SELECT A RANDOM PAIR
                     PieceData srcConnection = connectionCandidates.src[Random.Range(0, connectionCandidates.src.Count)];
                     PieceData dstConnection = connectionCandidates.dst[Random.Range(0, connectionCandidates.dst.Count)];
@@ -65,7 +73,7 @@ namespace narkdagas.mazegenerator {
                     //BUILD STAIR
                     BuildStair(srcConnection, dstConnection, (mazes[level].mazeConfig, mazes[level + 1].mazeConfig));
                     mazes[level].exitLocations.Add(srcConnection.pieceLocation);
-                    mazes[level+1].startLocations.Add(dstConnection.pieceLocation);
+                    mazes[level + 1].startLocations.Add(dstConnection.pieceLocation);
 
                     //GET OFFSET TO MOVE UPPER LEVEL
                     mazes[level + 1].mazeConfig.xOffset = srcConnection.pieceLocation.x - dstConnection.pieceLocation.x;
@@ -87,6 +95,7 @@ namespace narkdagas.mazegenerator {
                     (mazes[level + 1].mazeConfig.zOffset + carryZOffset) * mazes[level + 1].mazeConfig.pieceScale
                 );
             }
+
             Debug.Log("Connecting Levels... Done.");
         }
 
@@ -201,24 +210,40 @@ namespace narkdagas.mazegenerator {
             }
         }
 
-        void GenerateMap() {
-            var mapGenerator = GetComponent<MapGenerator>();
-            if (mapGenerator) mapGenerator.GenerateMap(mazes[0]);
+        private void PlaceGrimoire() {
+            //Will be placed at the last maze on a DeadEnd
+            var deadEnds = mazes[^1].pieces.OfTypes(new[] { PieceType.DeadEndTop, PieceType.DeadEndRight, PieceType.DeadEndLeft, PieceType.DeadEndBottom, });
+            var deadEnd = deadEnds.GetRandom();
+            var grimoire = Instantiate(grimoirePrefab, deadEnd.pieceModel.transform.position + Vector3.up * 2, deadEnd.pieceModel.transform.rotation);
+            grimoire.transform.Rotate(Vector3.right, -45);
+            grimoire.transform.SetParent(deadEnd.pieceModel.transform);
+            mazes[^1].exitLocations.Add(deadEnd.pieceLocation);
         }
 
-        GameObject PlacePlayer(Maze maze) {
+        void GenerateMinimaps() {
+            foreach (var maze in mazes) {
+                maze.GenerateMiniMap();
+            }
+        }
+
+        (Maze.MapLocation location, GameObject player) PlacePlayer(Maze maze) {
             for (int x = 1; x < maze.mazeConfig.width - 1; x++) {
                 for (int z = 1; z < maze.mazeConfig.height - 1; z++) {
                     if (maze.map[x, z] == (int)Maze.MapLocationType.Corridor) {
-                        return Instantiate(playerPrefab, new Vector3(x * maze.mazeConfig.pieceScale, 0, z * maze.mazeConfig.pieceScale), Quaternion.identity);
-                        //return new Maze.MapLocation(x, z);
+                        var mapLocation = new Maze.MapLocation(x, z);
+                        var playerInstance = Instantiate(playerPrefab, new Vector3(x * maze.mazeConfig.pieceScale, 0, z * maze.mazeConfig.pieceScale), Quaternion.identity);
+                        return (mapLocation, playerInstance);
                     }
                 }
             }
 
-            return null;
-            //return new Maze.MapLocation(0, 0);
+            return (new Maze.MapLocation(0, 0), null);
         }
-        
+
+        private void StartMinimapRender(Transform player) {
+            _minimapCameraTexture = new RenderTexture(150, 150, 8);
+            minimapCamera.Initialize(player.transform, _minimapCameraTexture);
+            minimapCameraDisplay.texture = _minimapCameraTexture;
+        }
     }
 }

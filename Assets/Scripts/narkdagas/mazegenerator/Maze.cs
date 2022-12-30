@@ -26,6 +26,8 @@ namespace narkdagas.mazegenerator {
         public MazeConfig mazeConfig;
         public byte[,] map;
         public PieceData[,] pieces;
+        public Texture2D minimap;
+        public int minimapPixelSize;
         public List<MapLocation> startLocations = new();
         public List<MapLocation> exitLocations = new();
 
@@ -40,7 +42,7 @@ namespace narkdagas.mazegenerator {
             public float xOffset;
             public float zOffset;
 
-            public MazeConfig(int width, int height, byte level = 0, float pieceScale = 6, float heightScale = 2, byte numRooms = 0, bool placePlayer = false) {
+            public MazeConfig(int width, int height, byte level = 0, float pieceScale = 6, float heightScale = 2, byte numRooms = 0) {
                 this.width = width;
                 this.height = height;
                 this.level = level;
@@ -88,7 +90,7 @@ namespace narkdagas.mazegenerator {
                 return HashCode.Combine(x, z);
             }
         }
-        
+
         public readonly List<MapLocation> directions = new() {
             new MapLocation(1, 0),
             new MapLocation(0, 1),
@@ -142,6 +144,7 @@ namespace narkdagas.mazegenerator {
                 while (leftX > 1) {
                     map[leftX--, leftZ] = 0;
                 }
+
                 while (rightX < mazeConfig.width - 2) {
                     map[rightX++, rightZ] = 0;
                 }
@@ -158,22 +161,23 @@ namespace narkdagas.mazegenerator {
                 int startTopZ = mazeConfig.height - 2;
                 bool doneLeft = false, doneRight = false, doneBottom = false, doneTop = false;
                 int step = 1;
-                
+
                 while ((!doneLeft || !doneRight || !doneBottom || !doneTop) && step < digMax) {
                     if (!doneLeft) {
                         map[startLeftX++, startLeftZ] = 0;
                         doneLeft = map[startLeftX, startLeftZ] == 0;
                     }
+
                     if (!doneRight) {
                         map[startRightX--, startRightZ] = 0;
                         doneRight = map[startRightX, startRightZ] == 0;
                     }
-                
+
                     if (!doneBottom) {
                         map[startBottomX, startBottomZ++] = 0;
                         doneBottom = map[startBottomX, startBottomZ] == 0;
                     }
-                
+
                     if (!doneTop) {
                         map[startTopX, startTopZ--] = 0;
                         doneTop = map[startTopX, startTopZ] == 0;
@@ -181,6 +185,7 @@ namespace narkdagas.mazegenerator {
 
                     step++;
                 }
+
                 Debug.Log($"Corridors carved in {step}/{digMax} steps");
             }
 
@@ -250,10 +255,14 @@ namespace narkdagas.mazegenerator {
                         GameObject pieceInstance;
                         switch (pieceType) {
                             case PieceType.CorridorHorizontal:
-                                pieceInstance = iterateStraightPieces ? Instantiate(straightPieces[straightPieceCount++ % straightPieces.Length], pos, Quaternion.Euler(0, 90, 0)) : Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
+                                pieceInstance = iterateStraightPieces
+                                    ? Instantiate(straightPieces[straightPieceCount++ % straightPieces.Length], pos, Quaternion.Euler(0, 90, 0))
+                                    : Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.Euler(0, 90, 0));
                                 break;
                             case PieceType.CorridorVertical:
-                                pieceInstance = iterateStraightPieces ? Instantiate(straightPieces[straightPieceCount++ % straightPieces.Length], pos, Quaternion.identity) : Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.identity);
+                                pieceInstance = iterateStraightPieces
+                                    ? Instantiate(straightPieces[straightPieceCount++ % straightPieces.Length], pos, Quaternion.identity)
+                                    : Instantiate(straightPieces.GetRandomPiece(), pos, Quaternion.identity);
                                 break;
                             case PieceType.CornerTopRight:
                                 pieceInstance = Instantiate(cornerPieces.GetRandomPiece(), pos, Quaternion.identity);
@@ -367,6 +376,41 @@ namespace narkdagas.mazegenerator {
             }
 
             return Instantiate(flooredCeiling, pos, Quaternion.identity);
+        }
+
+        public virtual void GenerateMiniMap() {
+            var mapW = map.GetLength(0);
+            var mapH = map.GetLength(1);
+            //we need to calculate the "pixel" size
+            //TODO - CURRENTLY MAP "CANVAS" IS HARDCODED TO 400 x 400 ... 
+            minimapPixelSize = Math.Min(400 / mapW, 400 / mapH);
+            var textureSide = minimapPixelSize * Math.Max(mapW, mapH);
+            //trim the last pixel if the maze length is odd
+            minimap = new Texture2D(textureSide, textureSide);
+
+            // var watch = System.Diagnostics.Stopwatch.StartNew();
+            for (int w = 0; w < mapW; w++) {
+                for (int h = 0; h < mapH; h++) {
+                    Color color = map[w, h] == 1 ? Color.black : Color.grey;
+                    //PAINT THE SIZE OF THE PIXEL
+                    //using an array to matrix
+                    // for (int p = 0; p < pixelSize * pixelSize; p++) {
+                    //     var row = (h * pixelSize) + (p % pixelSize);
+                    //     var col = (w * pixelSize) + (p / pixelSize);
+                    //     minimap.SetPixel(col, row, color);
+                    //
+
+                    for (int col = 0; col < minimapPixelSize; col++) {
+                        for (int row = 0; row < minimapPixelSize; row++) {
+                            minimap.SetPixel(col + (w * minimapPixelSize), row + (h * minimapPixelSize), color);
+                        }
+                    }
+                }
+            }
+            minimap.Apply();
+            // watch.Stop();
+            // var elapsedMs = watch.ElapsedMilliseconds;
+            // Debug.Log($"Map 1 Generated in {elapsedMs}ms");
         }
 
         protected int CountCrossNeighboursOfType(int x, int z, byte type = (byte)MapLocationType.Corridor) {

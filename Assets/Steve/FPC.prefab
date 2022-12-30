@@ -106,6 +106,7 @@ GameObject:
   - component: {fileID: 6825246719261496820}
   - component: {fileID: 6186648693766711644}
   - component: {fileID: 150554540723737657}
+  - component: {fileID: 3846312264716000430}
   m_Layer: 0
   m_Name: FPC
   m_TagString: Player
@@ -832,6 +833,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27d30cf52bbd4c7eb6973bcf460ca267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3846312264716000430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6825246719261496707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4772b5351c344b9caf89d01215645f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6825246720277807692

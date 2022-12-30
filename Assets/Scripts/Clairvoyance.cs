@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using narkdagas.mazegenerator;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(FindAStarPath))]
 public class Clairvoyance : MonoBehaviour {
@@ -15,7 +14,7 @@ public class Clairvoyance : MonoBehaviour {
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.P)) {
+        if (Input.GetKeyDown(KeyCode.C)) {
             if (_fastarp) {
                 RaycastHit hit;
                 Ray ray = new Ray(this.transform.position, Vector3.down);
@@ -23,7 +22,8 @@ public class Clairvoyance : MonoBehaviour {
                     var thisMaze = hit.collider.gameObject.GetComponentInParent<Maze>();
                     var startLocation = hit.collider.gameObject.GetComponent<PieceLocation>().location;
                     var endLocation = thisMaze.exitLocations.GetRandom();
-                    Debug.Log($"Casting Clairvoyance for level {thisMaze.mazeConfig.level} @start[{startLocation.x},{startLocation.z}]:{hit.collider.gameObject.transform.position} to @end[{endLocation.x},{endLocation.z}]@{thisMaze.pieces[endLocation.x, endLocation.z].pieceModel.transform.position}");
+                    Debug.Log($"Casting Clairvoyance for level {thisMaze.mazeConfig.level} @start[{startLocation.x},{startLocation.z}]:{hit.collider.gameObject.transform.position}");
+                    Debug.Log($"to @end[{endLocation.x},{endLocation.z}]@{thisMaze.pieces[endLocation.x, endLocation.z].pieceModel.transform.position}");
                     var destination = _fastarp.FindPath(thisMaze, startLocation, endLocation);
                     Debug.Log($"Clairvoyance found path for @destination[{destination.mapLocation.x},{destination.mapLocation.z}]:{thisMaze.pieces[destination.mapLocation.x, destination.mapLocation.z].pieceModel.transform.position}");
                     StartCoroutine(DisplayMagicPath(thisMaze, destination));
